@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function AdminPage(){return <main className="content-page"><section className="container narrow-page"><span className="eyebrow">运营工作台</span><h1>人工订单总览</h1><p className="page-lede">登录管理员账号后，从这里查看待确认、待交付和售后订单。</p><div className="admin-links"><Link className="button button-primary" href="/admin/orders">查看订单</Link><Link className="button button-secondary" href="/admin/products">管理商品</Link></div></section></main>}

@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: chonghub
+      POSTGRES_PASSWORD: local-dev-only
+      POSTGRES_DB: chonghub_dev
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - chonghub-postgres:/var/lib/postgresql/data
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports:
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
+volumes:
+  chonghub-postgres:

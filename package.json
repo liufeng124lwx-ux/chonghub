@@ -1,0 +1,49 @@
+{
+  "name": "chonghub",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:local": "tsx scripts/local-dev.ts start",
+    "dev:local:stop": "tsx scripts/local-dev.ts stop",
+    "dev:local:status": "tsx scripts/local-dev.ts status",
+    "dev:local:check": "tsx scripts/local-dev.ts check",
+    "build": "next build",
+    "start": "node .next-build/standalone/server.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "worker": "tsx scripts/worker.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "luxon": "^3.6.1",
+    "next": "^15.5.7",
+    "nodemailer": "^10.0.10",
+    "pg": "^8.13.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "server-only": "^0.0.1",
+    "sharp": "^0.33.5",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@playwright/test": "^1.55.0",
+    "@types/luxon": "^3.6.2",
+    "@types/node": "^22.15.0",
+    "@types/nodemailer": "^8.0.2",
+    "@types/pg": "^8.11.11",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.22.0",
+    "eslint-config-next": "^15.5.7",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.0.9"
+  }
+}
