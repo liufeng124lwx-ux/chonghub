@@ -29,6 +29,7 @@
 - `scripts/dev-web.ts`、`scripts/dev-admin.ts`、`scripts/build-web.ts`、`scripts/build-admin.ts`：本地和生产构建/启动包装脚本。
 - `compose.dev.yml`：增加 admin 服务的本地编排，但保持 PostgreSQL/Mailpit 服务兼容。
 - `tests/unit/catalog-availability.test.ts`、`tests/integration/catalog-availability.test.ts`、`tests/integration/service-isolation.test.ts`、`tests/e2e/admin-service.spec.ts`：分别验证状态规则、数据库一致性、进程隔离和关键 UI 流程。
+- `apps/web/src/components/**` 与 `apps/admin/src/components/**`：分别承载公开组件和后台组件；共享的纯展示组件进入独立 UI 包，不能让 core 依赖 React。
 
 ---
 
@@ -39,7 +40,7 @@
 - Create: `apps/web/package.json`, `apps/web/tsconfig.json`, `apps/web/next.config.ts`
 - Create: `apps/admin/package.json`, `apps/admin/tsconfig.json`, `apps/admin/next.config.ts`
 - Create: `packages/core/package.json`, `packages/core/tsconfig.json`
-- Modify: `package.json`, `tsconfig.json`, `next-env.d.ts`
+- Modify: `package.json`, `tsconfig.json`, `next-env.d.ts`, `scripts/seed.ts`, `scripts/migrate.ts`, `scripts/worker.ts`, `scripts/bootstrap-admin.ts`
 - Move/modify: current `src/modules/**` and `src/server/**` into `packages/core/src/**`, preserving import-level module boundaries
 - Test: `tests/unit/workspace-boundary.test.ts`
 
@@ -66,13 +67,17 @@ Define `@chonghub/core` as a private workspace package. Configure each app to re
 
 - [ ] **Step 3: Move server-only domain code into `packages/core/src`**
 
-Move database, environment, crypto, HTTP error, auth, catalog, orders, fulfillment, after-sales, settings, notification, and screening modules. Replace page-relative imports with package-local imports and add an explicit `server-only` boundary in database and credential modules.
+Move database, environment, crypto, HTTP error, auth, catalog, orders, fulfillment, after-sales, settings, notification, and screening modules. Replace page-relative imports with package-local imports and add an explicit `server-only` boundary in database and credential modules. Update `scripts/seed.ts`, `scripts/migrate.ts`, `scripts/worker.ts`, and `scripts/bootstrap-admin.ts` to import package entrypoints instead of the old `@/*` aliases.
 
-- [ ] **Step 4: Add the boundary regression test**
+- [ ] **Step 4: Configure Next package transpilation**
+
+Set `transpilePackages: ['@chonghub/core']` in both app configs, keep the package in each app's workspace dependencies, and make the package export map resolve correctly in development and production. Verify that server-only modules are never imported by client components.
+
+- [ ] **Step 5: Add the boundary regression test**
 
 Test that `packages/core/src` contains no imports from `next`, `react`, or app route files, and that both app TypeScript configs resolve the package. The test should fail if a UI module is imported into the shared package.
 
-- [ ] **Step 5: Run the package checks**
+- [ ] **Step 6: Run the package checks**
 
 Run:
 
@@ -84,7 +89,7 @@ pnpm test tests/unit/workspace-boundary.test.ts
 
 Expected: the package graph resolves and the existing unit suite remains green.
 
-- [ ] **Step 6: Commit the boundary change**
+- [ ] **Step 7: Commit the boundary change**
 
 ```bash
 git add pnpm-workspace.yaml package.json tsconfig.json apps packages tests/unit/workspace-boundary.test.ts
@@ -99,6 +104,7 @@ Rollback: if package resolution or the baseline suite fails, revert only this co
 - Create: `apps/web/src/app/**` for all current public pages, `apps/web/src/app/api/**`, `apps/web/src/app/layout.tsx`, `apps/web/src/app/globals.css`
 - Create: `apps/admin/src/app/**` for current admin pages, admin API routes, admin layout and admin styles
 - Create: `apps/web/src/middleware.ts`, `apps/admin/src/middleware.ts`
+- Move/modify: current `src/components/**` into the owning app's `src/components/**`, keeping public and admin components separate
 - Modify: `apps/web/next.config.ts`, `apps/admin/next.config.ts`, root `next.config.ts`
 - Modify: `Dockerfile`, `package.json`
 - Test: `tests/integration/service-isolation.test.ts`
@@ -122,7 +128,7 @@ Add a lightweight `/healthz` endpoint to each app returning `{ service: 'web'|'a
 
 - [ ] **Step 4: Add independent build and start commands**
 
-Configure distinct build directories and standalone output for web and admin. Add root scripts:
+Configure distinct build directories and standalone output for web and admin. Add `transpilePackages: ['@chonghub/core']` to both configs. Keep root `pnpm build` as a compatibility alias for the public web build, and add root scripts:
 
 ```json
 {
@@ -130,6 +136,7 @@ Configure distinct build directories and standalone output for web and admin. Ad
   "dev:admin": "pnpm --filter @chonghub/admin dev",
   "build:web": "pnpm --filter @chonghub/web build",
   "build:admin": "pnpm --filter @chonghub/admin build",
+  "build": "pnpm build:web",
   "start:web": "node apps/web/.next-build/standalone/server.js",
   "start:admin": "node apps/admin/.next-build/standalone/server.js"
 }
@@ -215,7 +222,8 @@ git commit -m "feat: isolate administrator authentication"
 
 **Interfaces:**
 - `type SkuAvailability = 'available' | 'sold_out'`
-- `setSkuAvailability(id: string, availability: SkuAvailability, actor: AdminActor, key: string): Promise<void>`
+- `type AdminActor = Extract<Actor, { kind: 'admin' }>`
+- `setSkuAvailability(id: string, availability: SkuAvailability, actor: AdminActor, key: string, expectedVersion: number): Promise<void>`
 - `assertSkuPurchasable(client: PoolClient, skuId: string): Promise<CatalogSkuSnapshot>`
 - Public `ProductView.skus[]` adds `availability` and `isPurchasable`.
 
