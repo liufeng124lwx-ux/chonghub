@@ -26,3 +26,24 @@ Resumed the ChongHub manual fulfillment task, verified the database-backed catal
 ### Status
 
 [OK] **Completed**
+
+
+## Session 2: Archive bootstrap guidelines
+
+**Date**: 2026-09-21
+**Task**: Archive bootstrap guidelines
+**Branch**: `main`
+
+### Summary
+
+Archived the completed 00-bootstrap-guidelines task at the user's request; the ChongHub implementation task was already archived and the working tree remains clean.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `972b5db` | (see git log) |
+
+### Status
+
+[OK] **Completed**
