@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import { deliverBatch } from '../src/modules/notifications/worker';
-import { pool } from '../src/server/db';
+import { deliverBatch } from '@chonghub/core/modules/notifications/worker';
+import { pool } from '@chonghub/core/server/db';
 
 const POLL_MS = 5_000;
 let stopping = false;

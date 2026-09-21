@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { pool, withTransaction } from '../src/server/db';
+import { pool, withTransaction } from '@chonghub/core/server/db';
 
 const migrationsDir = join(process.cwd(), 'db/migrations');
 

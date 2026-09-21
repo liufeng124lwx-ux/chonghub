@@ -24,9 +24,9 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"],
+      "@chonghub/core": ["./packages/core/src/index.ts"],
+      "@chonghub/core/*": ["./packages/core/src/*"]
     }
   },
   "include": [
@@ -34,6 +34,7 @@
     "next-env.d.ts",
     "playwright.config.ts",
     "scripts/**/*.ts",
+    "packages/core/src/**/*.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
     "tests/**/*.ts",

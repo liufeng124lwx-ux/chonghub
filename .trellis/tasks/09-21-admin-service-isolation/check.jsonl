@@ -2,3 +2,5 @@
 {"file":".trellis/tasks/09-21-admin-service-isolation/design.md","reason":"Quality checks must verify the two-app boundary, dedicated admin session, shared database trade-off, and forward-only migration strategy."}
 {"file":".trellis/spec/backend/index.md","reason":"Backend checks cover migrations, transactions, authentication, API errors, and operational health endpoints."}
 {"file":".trellis/spec/frontend/index.md","reason":"Frontend checks cover separate route trees, admin UI state, public sold-out display, and build/runtime isolation."}
+{"file":".trellis/spec/backend/service-isolation-and-catalog-availability.md","reason":"Checks validate migration, transaction, idempotency, authentication, and order availability contracts."}
+{"file":".trellis/spec/frontend/service-boundaries.md","reason":"Checks validate route ownership, disabled sold-out UI, and admin conflict handling."}

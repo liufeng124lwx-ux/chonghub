@@ -14,5 +14,37 @@ services:
     ports:
       - "127.0.0.1:1025:1025"
       - "127.0.0.1:8025:8025"
+  web:
+    profiles: [apps]
+    build:
+      context: .
+      args:
+        SERVICE: web
+        PORT: 3000
+    environment:
+      DATABASE_URL: postgresql://chonghub:local-dev-only@postgres:5432/chonghub_dev
+      APP_ORIGIN: http://localhost:3000
+      AUTH_HMAC_KEY: ${AUTH_HMAC_KEY:-local-compose-only-key-change-before-production-32}
+    depends_on:
+      - postgres
+    ports:
+      - "127.0.0.1:3000:3000"
+  admin:
+    profiles: [apps]
+    build:
+      context: .
+      args:
+        SERVICE: admin
+        PORT: 3001
+    environment:
+      DATABASE_URL: postgresql://chonghub:local-dev-only@postgres:5432/chonghub_dev
+      APP_ORIGIN: http://localhost:3000
+      ADMIN_ORIGIN: http://localhost:3001
+      PORT: 3001
+      AUTH_HMAC_KEY: ${AUTH_HMAC_KEY:-local-compose-only-key-change-before-production-32}
+    depends_on:
+      - postgres
+    ports:
+      - "127.0.0.1:3001:3001"
 volumes:
   chonghub-postgres:

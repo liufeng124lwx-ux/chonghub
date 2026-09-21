@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@chonghub/core':
+        specifier: workspace:*
+        version: link:packages/core
       dotenv:
         specifier: ^16.5.0
         version: 16.6.1
@@ -81,6 +84,99 @@ importers:
       vitest:
         specifier: ^3.0.9
         version: 3.2.7(@types/node@22.20.4)(tsx@4.23.15)
+
+  apps/admin:
+    dependencies:
+      '@chonghub/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      next:
+        specifier: ^15.5.7
+        version: 15.5.25(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      react:
+        specifier: ^19.1.1
+        version: 19.3.0
+      react-dom:
+        specifier: ^19.1.1
+        version: 19.3.0(react@19.3.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.20.4
+      '@types/react':
+        specifier: ^19.1.2
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: ^19.1.2
+        version: 19.3.0(@types/react@19.3.0)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  apps/web:
+    dependencies:
+      '@chonghub/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      next:
+        specifier: ^15.5.7
+        version: 15.5.25(@babel/core@7.29.7)(@playwright/test@1.63.0)(@types/node@22.20.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      react:
+        specifier: ^19.1.1
+        version: 19.3.0
+      react-dom:
+        specifier: ^19.1.1
+        version: 19.3.0(react@19.3.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.20.4
+      '@types/react':
+        specifier: ^19.1.2
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: ^19.1.2
+        version: 19.3.0(@types/react@19.3.0)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
+  packages/core:
+    dependencies:
+      luxon:
+        specifier: ^3.6.1
+        version: 3.7.2
+      nodemailer:
+        specifier: ^10.0.10
+        version: 10.0.10
+      pg:
+        specifier: ^8.13.1
+        version: 8.23.0
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      sharp:
+        specifier: ^0.33.5
+        version: 0.33.5
+      zod:
+        specifier: ^3.24.4
+        version: 3.25.76
+    devDependencies:
+      '@types/luxon':
+        specifier: ^3.6.2
+        version: 3.7.5
+      '@types/node':
+        specifier: ^22.15.0
+        version: 22.20.4
+      '@types/nodemailer':
+        specifier: ^8.0.2
+        version: 8.0.2
+      '@types/pg':
+        specifier: ^8.11.11
+        version: 8.23.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
 
 packages:
 

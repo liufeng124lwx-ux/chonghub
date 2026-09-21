@@ -1,3 +1,5 @@
 {"file":".trellis/tasks/09-21-admin-service-isolation/prd.md","reason":"Approved product requirements and acceptance criteria for the isolated admin service and SKU availability behavior."}
 {"file":".trellis/tasks/09-21-admin-service-isolation/design.md","reason":"Approved architecture, service boundaries, authentication, data flow, migration order, and rollback constraints."}
 {"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"The implementation crosses app, API, domain, database, deployment, and test layers."}
+{"file":".trellis/spec/backend/service-isolation-and-catalog-availability.md","reason":"Executable backend contracts for sessions, SKU availability, migrations, idempotency, and order locking."}
+{"file":".trellis/spec/frontend/service-boundaries.md","reason":"Executable frontend contracts for web/admin route ownership and sold-out purchase behavior."}

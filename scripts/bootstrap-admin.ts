@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import { pool, withTransaction } from '../src/server/db';
-import { normalizeEmail } from '../src/modules/auth/contracts';
+import { pool, withTransaction } from '@chonghub/core/server/db';
+import { normalizeEmail } from '@chonghub/core/modules/auth/contracts';
 
 async function main() {
   const input = process.argv[2];

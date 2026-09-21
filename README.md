@@ -8,7 +8,9 @@ ChongHub is a database-backed manual fulfillment storefront for digital services
 1. Copy `.env.example` to `.env.local` and set `DATABASE_URL` if needed.
 2. Start PostgreSQL with `docker compose -f compose.dev.yml up -d postgres`.
 3. Run `pnpm install`, `pnpm db:migrate`, and `pnpm db:seed`.
-4. Start the site with `pnpm dev` and open `http://localhost:3000`.
+4. Start the site with `pnpm dev:local` and open `http://localhost:3000`.
+5. Start the independent administrator service with `pnpm dev:admin` and open `http://localhost:3001/admin`. Its PID/log files are `var/admin-dev.pid` and `var/admin-dev.log`; use `dev:admin:status`, `dev:admin:check`, and `dev:admin:stop` to manage it.
+6. Verify both services with `pnpm health:web` and `pnpm health:admin`. Build independently using `pnpm build:web` and `pnpm build:admin`. See [production handoff](docs/operations/production-handoff.md) for migration and rollback order.
 
 ## 首版业务入口
 

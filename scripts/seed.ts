@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import { pool } from '../src/server/db';
-import { seedCatalog } from '../src/modules/catalog/seed';
+import { pool } from '@chonghub/core/server/db';
+import { seedCatalog } from '@chonghub/core/modules/catalog/seed';
 
 seedCatalog()
   .then(() => console.log('Catalog seed complete'))
