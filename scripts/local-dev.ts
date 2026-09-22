@@ -146,7 +146,7 @@ async function start() {
   await stopOwnedProcesses();
   mkdirSync(runtimeDir, { recursive: true });
   const log = openSync(logFile, 'a');
-  const child = spawn('pnpm', ['exec', 'next', 'dev', '--hostname', 'localhost', '--port', String(port)], {
+  const child = spawn('pnpm', ['--filter', '@chonghub/web', 'dev'], {
     cwd: root,
     env,
     detached: true,
