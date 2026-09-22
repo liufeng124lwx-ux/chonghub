@@ -47,3 +47,24 @@ Archived the completed 00-bootstrap-guidelines task at the user's request; the C
 ### Status
 
 [OK] **Completed**
+
+
+## Session 3: Improve admin product operations
+
+**Date**: 2026-09-22
+**Task**: Improve admin product operations
+**Branch**: `main`
+
+### Summary
+
+Redesigned /admin/products with lifecycle summary, create/publish/archive workflow, SKU price and availability controls; added catalog command idempotency migration, audit-safe updates, operations docs, specs, and verified both services/builds/tests.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7d99920` | (see git log) |
+
+### Status
+
+[OK] **Completed**
