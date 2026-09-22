@@ -21,6 +21,8 @@
 - Required secret files under `/opt/chonghub/secrets` (mode `0400`): `postgres_password`, `database_url`, `auth_hmac_key`, and `settings_encryption_key`.
 - Optional integration secret files are mounted as `*_FILE` variables and loaded by `ops/deploy/entrypoint.sh`; empty SMTP/Feishu files mean those integrations are not configured.
 - Images must be tagged with the release identifier (`chonghub-web:$RELEASE_TAG`, `chonghub-admin:$RELEASE_TAG`) so rollback can select an earlier release without rebuilding source.
+- Upload each release to an immutable `/opt/chonghub/releases/<release-tag>` directory, verify its SHA256 manifest, and build on the production x86_64 host; do not reuse a local arm64 image.
+- Keep admin bootstrap credentials in an operator-controlled interactive SSH session. Read the password silently, pass it only through a short-lived environment variable, and unset it immediately after bootstrap. Never place the password in a heredoc, command history, release file, task artifact, or chat message.
 
 ### 4. Validation & Error Matrix
 
@@ -32,6 +34,8 @@
 | Public routing | all three HTTPS `/healthz` probes return 200 | Validate Caddy and DNS; keep the prior route until fixed |
 | Reference app | `https://review.secondgrowth.cn/healthz` returns 200 | Stop and investigate shared Caddy impact |
 | Admin authentication | unauthenticated API returns 403 | Bootstrap credentials through an operator handoff; never print or commit a password |
+| Heredoc prompt | shell shows `heredoc>` before the command runs | Press `Ctrl-C`, enter the remote shell with `ssh -t`, and execute the bootstrap in separate interactive blocks |
+| TLS/domain | DNS exists but HTTPS or route fails | Validate Cloudflare proxy, Caddy config/reload, origin health, and then public HTTPS in that order |
 
 ### 5. Good/Base/Bad Cases
 
@@ -44,6 +48,7 @@
 - Local: `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build:web`, `pnpm build:admin`, Compose config validation, shell syntax validation, and `git diff --check`.
 - Server: `docker compose ps` shows all required services healthy; container probes return the expected JSON; HTTPS probes for root, `www`, and `admin` return 200; the reference health probe remains 200.
 - Post-deploy: verify the admin API is protected (403 without a session) and record whether operator credentials and SMTP/Feishu integrations were configured.
+- Layered post-deploy checks must cover Compose config, migration, container health, `/healthz`, `/readyz`, Caddy reload, public HTTPS, static assets, admin 403, authenticated admin reads, and reference-project health.
 
 ### 7. Wrong vs Correct
 
