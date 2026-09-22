@@ -14,6 +14,7 @@ import { readTimeline } from './repository';
 const defaultPolicy: ServicePolicy = { version: 1, zone: 'Asia/Shanghai', opensAt: '09:30', closesAt: '23:00', deliveryMinutes: 120, warrantyDays: 30, termsVersion: 'draft-v1' };
 
 function makeOrderNumber() { return `CH${Date.now().toString(36).toUpperCase()}${randomBytes(4).toString('hex').toUpperCase()}`; }
+function platformLabel(slug: string, name: string) { return ({ chatgpt: 'ChatGPT', claude: 'Claude', google: 'Google' } as Record<string, string>)[slug] ?? name; }
 function validateInput(input: CreateRequestInput) {
   if (!input || typeof input.skuId !== 'string' || !input.skuId) throw new AppError('INVALID_REQUEST', '请选择有效套餐。');
   const email = normalizeEmail(input.contactEmail);
@@ -46,10 +47,10 @@ export async function createRequest(input: CreateRequestInput, actor: Actor | nu
       if (actor?.kind !== 'user' && found.rows[0].owner_user_id) throw new AppError('AUTH_REQUIRED', '订单已关联账号，请登录后查看。', 401);
       return { order: mapPublicOrder(found.rows[0], await readTimeline(found.rows[0].id, false, client)), guestToken: await issueGuestToken(found.rows[0].id) };
     }
-    const sku = await client.query<{ id: string; product_name: string; product_eligibility: string; product_screening: 'gpt_session' | 'none'; sku_name: string; cycle_text: string; price_cents: number; warranty_text: string; availability: 'available' | 'sold_out' }>(
-      `SELECT s.id, p.name product_name, p.eligibility_text product_eligibility, p.screening_method product_screening,
+    const sku = await client.query<{ id: string; product_name: string; product_eligibility: string; product_screening: 'gpt_session' | 'none'; product_type: 'recharge' | 'account'; platform_slug: string; platform_name: string; sku_name: string; cycle_text: string; price_cents: number; warranty_text: string; availability: 'available' | 'sold_out' }>(
+      `SELECT s.id, p.name product_name, p.eligibility_text product_eligibility, p.screening_method product_screening, p.product_type, c.slug platform_slug, c.name platform_name,
               s.name sku_name, s.cycle_text, s.price_cents, s.warranty_text, s.availability
-       FROM skus s JOIN products p ON p.id=s.product_id
+       FROM skus s JOIN products p ON p.id=s.product_id JOIN categories c ON c.id=p.category_id
        WHERE s.id=$1 AND s.status='published' AND p.status='published' FOR UPDATE`, [normalized.skuId],
     );
     const product = sku.rows[0];
@@ -57,7 +58,7 @@ export async function createRequest(input: CreateRequestInput, actor: Actor | nu
     const policySetting = await client.query<{ value: ServicePolicy }>(`SELECT value FROM site_settings WHERE key='service_policy' LIMIT 1`);
     const policy = policySetting.rows[0]?.value ?? defaultPolicy;
     assertValidServicePolicy(policy);
-    const snapshot: OrderSnapshot = { productName: product.product_name, skuName: product.sku_name, displayPriceCents: product.price_cents, eligibilityText: product.product_eligibility, warrantyText: product.warranty_text, screening: product.product_screening, policy };
+    const snapshot: OrderSnapshot = { productName: product.product_name, productType: product.product_type, platform: { slug: product.platform_slug, name: platformLabel(product.platform_slug, product.platform_name) }, skuName: product.sku_name, displayPriceCents: product.price_cents, eligibilityText: product.product_eligibility, warrantyText: product.warranty_text, screening: product.product_screening, policy };
     const number = makeOrderNumber();
     const created = await client.query<any>(
       `INSERT INTO orders (number, sku_id, owner_user_id, contact_email, guest_password_digest, snapshot)
@@ -67,9 +68,9 @@ export async function createRequest(input: CreateRequestInput, actor: Actor | nu
     );
     const row = created.rows[0];
     await client.query(`INSERT INTO create_keys (actor_scope, key, body_digest, order_id) VALUES ($1,$2,$3,$4)`, [scope, key, bodyDigest, row.id]);
-    await client.query(`INSERT INTO order_events (order_id,type,message,visibility) VALUES ($1,'request_created','需求已提交，等待账号状态初筛。','customer')`, [row.id]);
+    await client.query(`INSERT INTO order_events (order_id,type,message,visibility) VALUES ($1,'request_created',$2,'customer')`, [row.id, product.product_screening === 'gpt_session' ? '需求已提交，等待账号状态初筛。' : '需求已提交，等待客服确认并人工交付。']);
     const guestToken = await issueGuestToken(row.id);
     await enqueueEvent(client, { dedupeKey: `order:${row.id}:created`, channel: 'email', type: 'request_created', payload: { email: normalized.contactEmail, orderNumber: number } });
-    return { order: mapPublicOrder(row, [{ at: new Date().toISOString(), message: '需求已提交，等待账号状态初筛。' }]), guestToken };
+    return { order: mapPublicOrder(row, [{ at: new Date().toISOString(), message: product.product_screening === 'gpt_session' ? '需求已提交，等待账号状态初筛。' : '需求已提交，等待客服确认并人工交付。' }]), guestToken };
   });
 }

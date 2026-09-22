@@ -6,6 +6,8 @@ export interface ProductView {
   eligibilityText: string;
   screening: 'gpt_session' | 'none';
   deliveryMethod: 'manual';
+  productType: 'recharge' | 'account';
+  platform: { slug: string; name: string };
   skus: Array<{
     id: string;
     slug: string;

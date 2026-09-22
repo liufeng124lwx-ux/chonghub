@@ -3,7 +3,7 @@ import { withTransaction } from '@chonghub/core/server/db';
 export const initialCatalog = [
   {
     categorySlug: 'chatgpt',
-    categoryName: 'ChatGPT 会员充值',
+    categoryName: 'ChatGPT',
     productSlug: 'chatgpt-plus',
     productName: 'ChatGPT Plus · 月卡',
     description: '为已有 ChatGPT 账号提供人工会员充值服务。先检测账号状态，再由客服确认条件、报价与交付。',
@@ -13,7 +13,7 @@ export const initialCatalog = [
   },
   {
     categorySlug: 'chatgpt',
-    categoryName: 'ChatGPT 会员充值',
+    categoryName: 'ChatGPT',
     productSlug: 'chatgpt-pro-5x',
     productName: 'ChatGPT Pro 5X · 月卡',
     description: '适用于符合受理条件的已有 ChatGPT 账号，人工确认后完成充值。',
@@ -23,7 +23,7 @@ export const initialCatalog = [
   },
   {
     categorySlug: 'chatgpt',
-    categoryName: 'ChatGPT 会员充值',
+    categoryName: 'ChatGPT',
     productSlug: 'chatgpt-pro-20x',
     productName: 'ChatGPT Pro 20X · 月卡',
     description: '适用于符合受理条件的已有 ChatGPT 账号，人工确认后完成充值。',

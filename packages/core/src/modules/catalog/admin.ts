@@ -47,7 +47,7 @@ export async function updateCatalogEntry(id: string, input: { name?: string; des
 
 export async function createCatalogProduct(input: {
   name: unknown; slug: unknown; description: unknown; skuName: unknown; skuSlug: unknown;
-  priceCents: unknown; categorySlug?: unknown; cycleText?: unknown; warrantyText?: unknown; status?: unknown;
+  priceCents: unknown; categorySlug?: unknown; productType?: unknown; screening?: unknown; eligibilityText?: unknown; cycleText?: unknown; warrantyText?: unknown; status?: unknown;
 }, actor: AdminActor, idempotencyKey: string): Promise<{ id: string }> {
   const productSlug = slug(input.slug, '商品 slug');
   const productName = text(input.name, '商品名称', 120);
@@ -55,13 +55,16 @@ export async function createCatalogProduct(input: {
   const skuName = text(input.skuName, '套餐名称', 120);
   const skuSlug = slug(input.skuSlug, '套餐 slug');
   const priceCents = cents(input.priceCents);
-  const categorySlug = typeof input.categorySlug === 'string' && input.categorySlug ? slug(input.categorySlug, '分类 slug') : 'chatgpt';
+  const categorySlug = typeof input.categorySlug === 'string' && input.categorySlug ? slug(input.categorySlug, '平台 slug') : 'chatgpt';
+  const productType: 'recharge' | 'account' = input.productType === 'account' ? 'account' : 'recharge';
+  const screening: 'gpt_session' | 'none' = productType === 'account' ? 'none' : input.screening === 'none' ? 'none' : 'gpt_session';
   const cycleText = typeof input.cycleText === 'string' && input.cycleText.trim() ? input.cycleText.trim().slice(0, 80) : '月卡';
   const warrantyText = typeof input.warrantyText === 'string' && input.warrantyText.trim() ? input.warrantyText.trim().slice(0, 500) : '以商品详情页说明为准。';
+  const eligibility = typeof input.eligibilityText === 'string' && input.eligibilityText.trim() ? input.eligibilityText.trim().slice(0, 5000) : productType === 'account' ? '由客服确认账号商品规格、交付方式与受理条件。' : '仅支持当前无有效订阅的账号；实际能否充值以人工复核为准。';
   const status: Extract<CatalogStatus, 'draft' | 'published'> = input.status === 'published' ? 'published' : 'draft';
   if (typeof idempotencyKey !== 'string' || idempotencyKey.length < 16 || idempotencyKey.length > 200) throw new AppError('INVALID_REQUEST', '操作标识无效。');
   return withTransaction(async (client) => {
-    const bodyDigest = hmacHex(JSON.stringify({ productSlug, productName, description, skuName, skuSlug, priceCents, categorySlug, cycleText, warrantyText, status }));
+    const bodyDigest = hmacHex(JSON.stringify({ productSlug, productName, description, skuName, skuSlug, priceCents, categorySlug, productType, screening, eligibility, cycleText, warrantyText, status }));
     const replay = await client.query<{ product_id: string | null; body_digest: string }>('SELECT product_id,body_digest FROM catalog_commands WHERE idempotency_key=$1', [idempotencyKey]);
     if (replay.rows[0]) {
       if (replay.rows[0].body_digest !== bodyDigest) throw new AppError('IDEMPOTENCY_CONFLICT', '操作标识已用于其他商品创建。', 409);
@@ -69,12 +72,13 @@ export async function createCatalogProduct(input: {
     }
     const duplicate = await client.query('SELECT 1 FROM products WHERE slug=$1 UNION ALL SELECT 1 FROM skus WHERE slug=$2 LIMIT 1', [productSlug, skuSlug]);
     if (duplicate.rowCount) throw new AppError('CONFLICT', '商品或套餐 slug 已存在，请更换后重试。', 409);
-    const category = await client.query<{ id: string }>('INSERT INTO categories (slug,name) VALUES ($1,$2) ON CONFLICT (slug) DO UPDATE SET name=EXCLUDED.name RETURNING id', [categorySlug, categorySlug === 'chatgpt' ? 'ChatGPT 会员充值' : categorySlug]);
+    const platformNames: Record<string, string> = { chatgpt: 'ChatGPT', claude: 'Claude', google: 'Google' };
+    const category = await client.query<{ id: string }>('INSERT INTO categories (slug,name) VALUES ($1,$2) ON CONFLICT (slug) DO UPDATE SET name=EXCLUDED.name RETURNING id', [categorySlug, platformNames[categorySlug] ?? categorySlug]);
     const categoryId = category.rows[0]?.id;
     if (!categoryId) throw new AppError('INVALID_REQUEST', '商品分类不存在。');
     const maxOrder = await client.query<{ max: number | null }>('SELECT MAX(sort_order)::int AS max FROM products WHERE category_id=$1', [categoryId]);
-    const product = await client.query<{ id: string }>(`INSERT INTO products (category_id,slug,name,description,eligibility_text,delivery_method,screening_method,status,sort_order)
-      VALUES ($1,$2,$3,$4,$5,'manual','gpt_session',$6,$7) RETURNING id`, [categoryId, productSlug, productName, description, '仅支持当前无有效订阅的账号；实际能否充值以人工复核为准。', status, (maxOrder.rows[0]?.max ?? -1) + 1]);
+    const product = await client.query<{ id: string }>(`INSERT INTO products (category_id,slug,name,description,eligibility_text,delivery_method,screening_method,product_type,status,sort_order)
+      VALUES ($1,$2,$3,$4,$5,'manual',$6,$7,$8,$9) RETURNING id`, [categoryId, productSlug, productName, description, eligibility, screening, productType, status, (maxOrder.rows[0]?.max ?? -1) + 1]);
     const productId = product.rows[0]?.id;
     if (!productId) throw new AppError('INTERNAL_ERROR', '商品创建失败。', 500);
     await client.query(`INSERT INTO skus (product_id,slug,name,cycle_text,price_cents,status,warranty_text,sort_order,availability)

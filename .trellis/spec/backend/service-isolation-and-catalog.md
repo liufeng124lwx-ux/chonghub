@@ -104,3 +104,16 @@ DELETE FROM products WHERE id = $1;
 -- Correct
 UPDATE products SET status = 'unlisted', updated_at = now() WHERE id = $1;
 ```
+
+## 9. Product Type and Platform
+
+- `products.product_type` is `recharge | account`; the migration default is `recharge` so existing rows keep their behavior.
+- `categories` remains the platform dimension (`chatgpt | claude | google` in the current catalog). Product DTOs expose both `productType` and `platform`.
+- Account products use `screening_method = 'none'`, retain `delivery_method = 'manual'`, and create an order snapshot without ChatGPT screening data.
+- Recharge products keep the existing `gpt_session` screening contract unless an explicit no-screening product is created by the operator.
+- Current account fulfillment is a human WeChat workflow. Payment, credential storage, inventory deduction, and automatic delivery are out of scope until a separate qualification and implementation task is approved.
+
+### Validation
+
+- Admin create normalizes account products to `screening_method = 'none'` and preserves the selected platform.
+- Public catalog and order snapshots expose product type and platform so account and recharge copy cannot be conflated.

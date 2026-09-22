@@ -9,6 +9,9 @@ type ProductRow = {
   eligibility_text: string;
   screening_method: 'gpt_session' | 'none';
   delivery_method: 'manual';
+  product_type: 'recharge' | 'account';
+  platform_slug: string;
+  platform_name: string;
   sku_id: string;
   sku_slug: string;
   sku_name: string;
@@ -26,12 +29,18 @@ export type AdminProductView = ProductView & {
   skus: Array<ProductView['skus'][number] & { status: 'draft' | 'published' | 'unlisted' }>;
 };
 
+function platformLabel(slug: string, name: string): string {
+  return ({ chatgpt: 'ChatGPT', claude: 'Claude', google: 'Google' } as Record<string, string>)[slug] ?? name;
+}
+
 const select = `
   SELECT p.id, p.slug, p.name, p.description, p.eligibility_text,
          p.screening_method, p.delivery_method,
+         p.product_type, c.slug AS platform_slug, c.name AS platform_name,
          s.id AS sku_id, s.slug AS sku_slug, s.name AS sku_name,
          s.cycle_text, s.price_cents, s.warranty_text, s.availability, s.version
   FROM products p
+  JOIN categories c ON c.id = p.category_id
   JOIN skus s ON s.product_id = p.id
   WHERE p.status = 'published' AND s.status = 'published'
 `;
@@ -47,6 +56,8 @@ function groupProducts(rows: ProductRow[]): ProductView[] {
       eligibilityText: row.eligibility_text,
       screening: row.screening_method,
       deliveryMethod: row.delivery_method,
+      productType: row.product_type,
+      platform: { slug: row.platform_slug, name: platformLabel(row.platform_slug, row.platform_name) },
       skus: [],
     };
     existing.skus.push({
@@ -87,11 +98,13 @@ export async function findAdminProducts(): Promise<AdminProductView[]> {
   const { rows } = await query<AdminProductRow>(`
     SELECT p.id, p.slug, p.name, p.description, p.eligibility_text,
            p.screening_method, p.delivery_method, p.status AS product_status,
+           p.product_type, c.slug AS platform_slug, c.name AS platform_name,
            p.created_at, p.updated_at,
            s.id AS sku_id, s.slug AS sku_slug, s.name AS sku_name,
            s.cycle_text, s.price_cents, s.warranty_text, s.status AS sku_status,
            s.availability, s.version
     FROM products p
+    JOIN categories c ON c.id = p.category_id
     LEFT JOIN skus s ON s.product_id = p.id
     ORDER BY CASE p.status WHEN 'published' THEN 0 WHEN 'draft' THEN 1 ELSE 2 END,
              p.sort_order, p.updated_at DESC, p.name, s.sort_order, s.price_cents
@@ -104,6 +117,8 @@ export async function findAdminProducts(): Promise<AdminProductView[]> {
       name: row.name,
       description: row.description,
       eligibilityText: row.eligibility_text,
+      productType: row.product_type,
+      platform: { slug: row.platform_slug, name: platformLabel(row.platform_slug, row.platform_name) },
       screening: row.screening_method,
       deliveryMethod: row.delivery_method,
       status: row.product_status,

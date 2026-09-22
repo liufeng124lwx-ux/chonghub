@@ -45,6 +45,8 @@ export interface CreateRequestInput {
 }
 
 export interface OrderSnapshot {
+  productType: 'recharge' | 'account';
+  platform: { slug: string; name: string };
   productName: string;
   skuName: string;
   displayPriceCents: Money;

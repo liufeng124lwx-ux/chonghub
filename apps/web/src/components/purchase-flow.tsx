@@ -20,6 +20,7 @@ function screeningFeedback(report: ScreeningReport): string {
 }
 
 export default function PurchaseFlow({ product }: { product: ProductView }) {
+  const requiresScreening = product.screening === 'gpt_session';
   const router = useRouter();
   const [skuId, setSkuId] = useState(product.skus[0]?.id ?? '');
   const [email, setEmail] = useState('');
@@ -42,8 +43,8 @@ export default function PurchaseFlow({ product }: { product: ProductView }) {
   async function buy() {
     setPurchaseAttempted(true);
     if (!selectedSku?.isPurchasable) { setMessage('该套餐当前已售罄，请选择其他可售套餐。'); return; }
-    if (!report) { setMessage('还没有进行账号检测，请先粘贴授权文件并点击“检测账号”。'); return; }
-    if (report.status !== 'passed') { setMessage(screeningFeedback(report)); return; }
+    if (requiresScreening && !report) { setMessage('还没有进行账号检测，请先粘贴授权文件并点击“检测账号”。'); return; }
+    if (requiresScreening && report?.status !== 'passed') { setMessage(screeningFeedback(report!)); return; }
     if (!email.trim()) { setMessage('请先填写联系邮箱，用于接收订单和查询验证码。'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { setMessage('请输入有效的联系邮箱。'); return; }
     setBusy(true); setMessage('正在生成订单…');
@@ -77,10 +78,10 @@ export default function PurchaseFlow({ product }: { product: ProductView }) {
   }
 
   return <section className="purchase-flow" id="purchase">
-    {busy && <div className="wechat-modal-backdrop"><div className="wechat-modal" role="status" aria-live="polite"><span className="order-spinner" aria-hidden="true" /><h2>正在生成订单</h2><p>正在保存套餐和检测结果，请稍候…</p></div></div>}
-    <div className="purchase-flow-head"><div><span className="eyebrow">购买前检测</span><h2>先检测账号，再直接购买</h2><p>检测只在你的浏览器内进行，不上传或保存授权内容。检测通过后填写邮箱即可生成订单。</p></div></div>
+    {busy && <div className="wechat-modal-backdrop"><div className="wechat-modal" role="status" aria-live="polite"><span className="order-spinner" aria-hidden="true" /><h2>正在生成订单</h2><p>正在保存商品和订单信息，请稍候…</p></div></div>}
+    <div className="purchase-flow-head"><div><span className="eyebrow">{requiresScreening ? '购买前检测' : '人工交付'}</span><h2>{requiresScreening ? '先检测账号，再直接购买' : '提交需求，客服人工确认'}</h2><p>{requiresScreening ? '检测只在你的浏览器内进行，不上传或保存授权内容。检测通过后填写邮箱即可生成订单。' : '提交后由客服确认商品规格、受理条件、收款和交付安排。当前暂不接入在线支付或自动发货。'}</p></div></div>
     <div className="purchase-grid">
-      <div className="form-card purchase-check-card">
+      {requiresScreening && <div className="form-card purchase-check-card">
         <div className="purchase-session-field">
           <div className="purchase-field-label"><label htmlFor="chatgpt-session">粘贴 ChatGPT 授权内容</label><a className="text-link" href="https://chatgpt.com/api/auth/session" target="_blank" rel="noreferrer">获取授权内容 ↗</a></div>
           <textarea id="chatgpt-session" autoComplete="off" value={session} onChange={(event) => { setSession(event.target.value); setReport(null); setMessage(''); setPurchaseAttempted(false); }} placeholder="先登录 ChatGPT，再打开会话信息页面并全选复制 JSON" />
@@ -88,7 +89,7 @@ export default function PurchaseFlow({ product }: { product: ProductView }) {
         <div className="purchase-check-actions"><button className="button button-secondary" type="button" disabled={!session.trim() || busy} onClick={detect}>检测账号</button>{report && <span className={`check-badge check-${report.status}`}>{report.status === 'passed' ? '检测通过' : report.status === 'subscribed' ? '订阅中' : '需重新检查'}</span>}</div>
         {!purchaseAttempted && message && <p className="form-message" role={report?.status === 'passed' ? 'status' : 'alert'}>{message}</p>}
         {report?.status === 'passed' && <small>检测仅依据提供的信息，实际充值条件仍需客服人工确认。</small>}
-      </div>
+      </div>}
       <div className="form-card purchase-order-card">
         <label>选择套餐<select value={skuId} onChange={(event) => setSkuId(event.target.value)}>{product.skus.map((sku) => <option key={sku.id} value={sku.id} disabled={!sku.isPurchasable}>{sku.name} · ¥{(sku.priceCents / 100).toFixed(0)}{sku.isPurchasable ? '' : ' · 已售罄'}</option>)}</select></label>
         <label>联系邮箱<input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="用于订单通知和游客查单" /></label>
@@ -96,7 +97,7 @@ export default function PurchaseFlow({ product }: { product: ProductView }) {
         <button className="button button-primary" type="button" disabled={busy || !selectedSku?.isPurchasable} onClick={() => void buy()}>{busy ? '正在生成订单…' : selectedSku?.isPurchasable ? '立即购买并生成订单' : '该套餐已售罄'}</button>
         {purchaseAttempted && message && <div className="form-message" role={busy ? 'status' : 'alert'} aria-atomic="true">
           <p>{message}</p>
-          {report?.status !== 'passed' && <div className="purchase-check-actions">
+          {requiresScreening && report?.status !== 'passed' && <div className="purchase-check-actions">
             <a className="text-link" href="https://chatgpt.com/" target="_blank" rel="noreferrer">打开 ChatGPT 登录或切换账号 ↗</a>
             <a className="text-link" href="https://chatgpt.com/api/auth/session" target="_blank" rel="noreferrer">重新获取授权文件 ↗</a>
           </div>}

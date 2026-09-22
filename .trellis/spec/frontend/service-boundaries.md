@@ -54,3 +54,9 @@ This contract applies to pages, components, middleware, and API routes in `apps/
 - The admin page must list all lifecycle states through an admin DTO. It must provide a create form, explicit publish action, and archive action with copy explaining that historical orders remain intact.
 - Product status (`draft`, `published`, `unlisted`) and SKU availability (`available`, `sold_out`) are separate controls. A sold-out SKU remains visible but cannot be selected for a new public order.
 - The admin editor sends a fresh idempotency key for create, publish, archive, SKU lifecycle, and availability writes. A conflict preserves the editor and asks the operator to refresh.
+
+## 9. Product Type Presentation
+
+- The admin editor requires an explicit product type (`会员充值服务` or `账号商品`) and platform (`ChatGPT`, `Claude`, or `Google`).
+- Account product purchase flows skip ChatGPT session screening and show manual fulfillment copy; recharge flows retain the screening gate.
+- Public cards and detail pages display the platform and product type. Account copy must say that the customer submits a request for manual confirmation and that online payment/automatic delivery are not currently connected.

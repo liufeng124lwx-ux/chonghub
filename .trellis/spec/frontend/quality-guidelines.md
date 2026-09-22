@@ -40,6 +40,15 @@ raw ChatGPT session snapshot in browser memory only and send only the constraine
 | Existing guest grant buys again | Issue a fresh grant for the new/replayed order; do not reject solely because a prior guest cookie exists |
 | Valid order and report | Open order detail and auto-open WeChat modal |
 
+### Product Type Matrix
+
+| Product type | Required UI behavior |
+| --- | --- |
+| Recharge | Show the ChatGPT session screening controls only when `screening === 'gpt_session'`; keep the constrained screening report flow. |
+| Account | Show platform/type labels, skip session screening, and state that the request is manually confirmed and fulfilled through WeChat. |
+
+The admin create form must use labelled, keyboard-accessible selects for product type and platform. Account copy must not imply online payment, automatic delivery, or credential storage is available.
+
 ---
 
 ## Forbidden Patterns
