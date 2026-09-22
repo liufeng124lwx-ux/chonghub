@@ -20,6 +20,7 @@ services:
       retries: 20
 
   web:
+    image: chonghub-web:${RELEASE_TAG:-latest}
     build:
       context: ../..
       dockerfile: Dockerfile
@@ -69,6 +70,7 @@ services:
       retries: 12
 
   admin:
+    image: chonghub-admin:${RELEASE_TAG:-latest}
     build:
       context: ../..
       dockerfile: Dockerfile
@@ -119,6 +121,7 @@ services:
       retries: 12
 
   migrate:
+    image: chonghub-migrate:${RELEASE_TAG:-latest}
     build:
       context: ../..
       dockerfile: Dockerfile

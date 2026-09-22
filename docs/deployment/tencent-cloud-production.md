@@ -31,6 +31,8 @@
 6. 将 `ops/deploy/Caddyfile.chonghub` 合并到现有 Caddy 配置，先 `caddy validate`，再 reload；不得删除参考项目站点块。
 7. 在 Cloudflare 添加 `@`、`www`、`admin` 三条 proxied A 记录后，验证正常 TLS、页面、CSS/JS、后台匿名 401 和登录。
 
+`RELEASE_TAG` 必须使用 release 目录名；Compose 会为 web、admin 和 migrate 镜像保留同名 tag，回退时按上一 release tag 切换。
+
 ## Secret 文件
 
 需要创建 `postgres_password`、`database_url`、`auth_hmac_key`、`settings_encryption_key`、SMTP 和 Feishu webhook 对应文件。密码、HMAC key 和加密 key 不能写入 Git、Compose env、镜像或日志。生产禁止 `MAIL_TRANSPORT=local`。
