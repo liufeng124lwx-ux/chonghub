@@ -22,6 +22,7 @@
 - Optional integration secret files are mounted as `*_FILE` variables and loaded by `ops/deploy/entrypoint.sh`; empty SMTP/Feishu files mean those integrations are not configured.
 - Images must be tagged with the release identifier (`chonghub-web:$RELEASE_TAG`, `chonghub-admin:$RELEASE_TAG`) so rollback can select an earlier release without rebuilding source.
 - Upload each release to an immutable `/opt/chonghub/releases/<release-tag>` directory, verify its SHA256 manifest, and build on the production x86_64 host; do not reuse a local arm64 image.
+- When the host does not provide `pg_restore`, validate a custom-format dump with the running PostgreSQL image/container and retain the generated `pg_restore --list` output beside the backup.
 - Keep admin bootstrap credentials in an operator-controlled interactive SSH session. Read the password silently, pass it only through a short-lived environment variable, and unset it immediately after bootstrap. Never place the password in a heredoc, command history, release file, task artifact, or chat message.
 
 ### 4. Validation & Error Matrix

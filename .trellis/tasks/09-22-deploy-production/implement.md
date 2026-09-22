@@ -50,3 +50,15 @@
 - Deployed only admin: `chonghub-admin:2fe275a`; web remains `chonghub-web:2bbbc7d`. Shared Compose `RELEASE_TAG` now points at `2fe275a`; a subsequent whole-stack release must build its web image before activating it.
 - Public root follows to `/login` with HTTP 200; login CSS and two JS resources return 200; admin `/readyz` returns 200 and anonymous product API remains 403. Web and reference health remain 200; all three ChongHub containers are healthy.
 - Local typecheck, lint, and admin production build passed. Trellis check found no hotfix correctness or authorization issues. Admin account initialization and authenticated workflow validation remain pending; the overall deployment task is still in progress.
+
+### Storefront information hierarchy release (2026-09-22)
+
+- Pushed commit `cc601cb` to `origin/main` and uploaded the immutable source archive to `/opt/chonghub/releases/cc601cb`.
+- Release integrity: remote archive SHA256 `6fa079c716be1376a99eaea1e6594e311ba225213e6f59209fd1950084078a0a`; source manifest recorded at `/opt/chonghub/releases/cc601cb/source-manifest.sha256`.
+- Images built natively on the Tencent x86_64 host and verified as `amd64/linux`: `chonghub-web:cc601cb`, `chonghub-admin:cc601cb`, and `chonghub-migrate:cc601cb`.
+- Backup before migration: `/opt/chonghub/backups/20260922-storefront-cc601cb/chonghub.dump`; custom-format `pg_restore --list` validation passed using the running PostgreSQL image. The validated list is retained as `chonghub.dump.list`.
+- Migration log: `/opt/chonghub/backups/20260922-storefront-cc601cb/migrate.log`; the explicit `migrate` service exited successfully.
+- Activation recreated only `chonghub` PostgreSQL/web/admin services with `RELEASE_TAG=cc601cb`; all three containers report healthy. Container `/healthz` and `/readyz` probes returned the expected service JSON.
+- Public checks passed: `https://chonghub.com/healthz`, `https://www.chonghub.com/healthz`, and `https://admin.chonghub.com/healthz` return 200; homepage, catalog, and product detail contain the new information hierarchy markers; all ten homepage CSS/JS assets return 200; anonymous admin product API returns 403; `https://review.secondgrowth.cn/healthz` remains ready.
+- Existing Caddy/DNS routing was reused because all three domains were already healthy; no shared `second-growth` service or Caddy container was recreated.
+- Rollback references remain available in `/opt/chonghub/releases` and the pre-release database backup. Admin credential bootstrap and authenticated admin workflow validation remain operator handoff items; SMTP/Feishu integrations and automatic delivery are unchanged.
