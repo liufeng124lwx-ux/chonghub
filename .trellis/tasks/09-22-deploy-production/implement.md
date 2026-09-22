@@ -43,3 +43,10 @@
 - Backup: `/opt/chonghub/backups/pre-migrate-initial/chonghub.dump`; custom-format dump and `pg_restore --list` validation passed.
 - Runtime: `chonghub-web-1`, `chonghub-admin-1`, and `chonghub-postgres-1` are healthy. Web/admin container probes and HTTPS probes for `chonghub.com`, `www.chonghub.com`, and `admin.chonghub.com` return 200. `review.secondgrowth.cn/healthz` remains 200.
 - Boundary: `admin.chonghub.com/api/admin/products` returns 403 without an admin session. Admin credentials remain an operator handoff; SMTP/Feishu files are placeholders and automatic delivery is not enabled.
+
+### Admin root hotfix (2026-09-22)
+
+- Root `/` returned 404 because the admin middleware excluded it and no root page existed. Release `2fe275a` permits the exact root path and redirects it to `/login`.
+- Deployed only admin: `chonghub-admin:2fe275a`; web remains `chonghub-web:2bbbc7d`. Shared Compose `RELEASE_TAG` now points at `2fe275a`; a subsequent whole-stack release must build its web image before activating it.
+- Public root follows to `/login` with HTTP 200; login CSS and two JS resources return 200; admin `/readyz` returns 200 and anonymous product API remains 403. Web and reference health remain 200; all three ChongHub containers are healthy.
+- Local typecheck, lint, and admin production build passed. Trellis check found no hotfix correctness or authorization issues. Admin account initialization and authenticated workflow validation remain pending; the overall deployment task is still in progress.

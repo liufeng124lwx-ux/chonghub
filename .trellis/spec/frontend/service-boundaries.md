@@ -13,7 +13,7 @@ This contract applies to pages, components, middleware, and API routes in `apps/
 ## 3. Contracts
 
 - Web middleware returns 404 for `/admin` and `/api/admin/**`.
-- Admin middleware allows only admin pages, admin API, login, and health endpoints.
+- Admin middleware allows only the exact root `/`, admin pages, admin API, login, and health endpoints. The root page redirects to `/login` (307); it does not bypass admin session checks.
 - Sold-out `<option>` elements are disabled; the purchase button is disabled and the submit handler rechecks `isPurchasable`.
 - Admin controls send `productId`, `skuId`, `availability`, `expectedVersion`, and a fresh idempotency key.
 
@@ -33,6 +33,7 @@ This contract applies to pages, components, middleware, and API routes in `apps/
 
 - Static route ownership assertions.
 - Independent web/admin typecheck and production builds.
+- Deployment smoke check: request the admin hostname root, follow its redirect to `/login`, and verify the login page and CSS/JS return 200; the anonymous admin API must still return 403. `/healthz` alone does not verify the user-facing entry point.
 - Component contract tests for sold-out display, disabled selection, and conflict handling.
 
 ## 7. Wrong vs Correct
