@@ -60,6 +60,18 @@ raw ChatGPT session snapshot in browser memory only and send only the constraine
 
 ## Testing Requirements
 
+### Product WeChat contact widget
+
+- The active public Next app is `apps/web`. Its local static assets must exist in
+  `apps/web/public/`; root `public/` alone is not served by this app in development.
+- `customerService.qrPath` remains settings-driven. For the default
+  `/images/customer-service-wechat.jpg`, keep the web asset and the root asset
+  (used by the Dockerfile) consistent.
+- A product page HTTP 200 or an `<img>` in its HTML is not proof the QR works:
+  request the image URL and verify browser `img.complete && img.naturalWidth > 0`.
+- Verify contact expansion and collapse by clicking the visible control at desktop
+  and mobile viewport sizes; the full QR must remain uncropped and within the viewport.
+
 <!-- What level of testing is expected -->
 
 (To be filled by the team)
