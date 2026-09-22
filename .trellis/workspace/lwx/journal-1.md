@@ -89,3 +89,24 @@ Redesigned /admin/products with lifecycle summary, create/publish/archive workfl
 ### Status
 
 [OK] **Completed**
+
+
+## Session 5: Refresh ChongHub storefront hierarchy
+
+**Date**: 2026-09-22
+**Task**: Refresh ChongHub storefront hierarchy
+**Branch**: `main`
+
+### Summary
+
+Refreshed the public homepage, catalog/pricing view, and product detail hierarchy using the approved Refero synthesis. Reduced navigation, added data-driven eligibility and fulfillment trust cues, preserved purchase behavior, updated frontend quality guidance, and verified typecheck, lint, tests, web build, routes, assets, and diff.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6c68b71` | (see git log) |
+
+### Status
+
+[OK] **Completed**
