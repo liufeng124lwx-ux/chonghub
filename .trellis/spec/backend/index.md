@@ -20,6 +20,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | To fill |
 | [Logging Guidelines](./logging-guidelines.md) | Structured logging, log levels | To fill |
 | [Service Isolation and Catalog Availability](./service-isolation-and-catalog.md) | Web/admin boundaries, sessions, SKU availability, and order locking | Current |
+| [Production Deployment](./deployment.md) | Tagged Compose releases, secrets, migrations, Caddy, and health gates | Current |
 
 ---
 

@@ -23,7 +23,7 @@ Do not use `MAIL_TRANSPORT=local`, development passwords, or the local database 
 3. Before the first migration, create a custom-format PostgreSQL dump and verify `pg_restore --list`.
 4. Start the isolated PostgreSQL service, run `pnpm db:migrate` explicitly from the release image, then bootstrap the admin if needed.
 5. Start web and admin, validate health/readiness, and then update Caddy routing and DNS records.
-6. Verify normal HTTPS, public pages, admin 401 boundary, login, catalog reads, and an order creation path with manual fulfillment.
+6. Verify normal HTTPS, public pages, anonymous admin access rejection (the current API returns 403), login, catalog reads, and an order creation path with manual fulfillment.
 
 ## Rollback
 

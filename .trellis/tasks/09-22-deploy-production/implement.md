@@ -35,3 +35,11 @@
 - Migration output and schema version.
 - Container health, HTTPS status, admin boundary, and browser checks.
 - Final URLs and rollback release.
+
+## Recorded deployment evidence (2026-09-22)
+
+- Release: `/opt/chonghub/releases/2bbbc7d`; source manifest SHA256 `c063a2cb618db28fac7e11968142a850cab2bf8f30e218d863f53b0f1de307ca`.
+- Images: `chonghub-web:2bbbc7d` and `chonghub-admin:2bbbc7d`, built on the Tencent x86_64 host.
+- Backup: `/opt/chonghub/backups/pre-migrate-initial/chonghub.dump`; custom-format dump and `pg_restore --list` validation passed.
+- Runtime: `chonghub-web-1`, `chonghub-admin-1`, and `chonghub-postgres-1` are healthy. Web/admin container probes and HTTPS probes for `chonghub.com`, `www.chonghub.com`, and `admin.chonghub.com` return 200. `review.secondgrowth.cn/healthz` remains 200.
+- Boundary: `admin.chonghub.com/api/admin/products` returns 403 without an admin session. Admin credentials remain an operator handoff; SMTP/Feishu files are placeholders and automatic delivery is not enabled.

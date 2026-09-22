@@ -29,7 +29,7 @@
 4. 运行 `docker compose -f ops/deploy/compose.yml --env-file /opt/chonghub/compose.env run --rm migrate`。
 5. 运行 `docker compose ... up -d postgres web admin`，确认容器 healthcheck 和 `/readyz`。
 6. 将 `ops/deploy/Caddyfile.chonghub` 合并到现有 Caddy 配置，先 `caddy validate`，再 reload；不得删除参考项目站点块。
-7. 在 Cloudflare 添加 `@`、`www`、`admin` 三条 proxied A 记录后，验证正常 TLS、页面、CSS/JS、后台匿名 401 和登录。
+7. 在 Cloudflare 添加 `@`、`www`、`admin` 三条 proxied A 记录后，验证正常 TLS、页面、CSS/JS、后台匿名访问被拒绝（当前 API 返回 403）和登录。
 
 `RELEASE_TAG` 必须使用 release 目录名；Compose 会为 web、admin 和 migrate 镜像保留同名 tag，回退时按上一 release tag 切换。
 
