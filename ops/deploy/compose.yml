@@ -1,0 +1,176 @@
+name: chonghub
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    volumes:
+      - chonghub-postgres:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  web:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      args:
+        SERVICE: web
+        PORT: 3000
+    environment:
+      NODE_ENV: production
+      APP_ORIGIN: ${APP_ORIGIN:?APP_ORIGIN is required}
+      ADMIN_ORIGIN: ${ADMIN_ORIGIN:?ADMIN_ORIGIN is required}
+      PRIVATE_STORAGE_DIR: /app/var/private
+      DATABASE_URL_FILE: /run/secrets/database_url
+      AUTH_HMAC_KEY_FILE: /run/secrets/auth_hmac_key
+      SETTINGS_ENCRYPTION_KEY_FILE: /run/secrets/settings_encryption_key
+      MAIL_TRANSPORT: ${MAIL_TRANSPORT:-smtp}
+      SMTP_HOST_FILE: /run/secrets/smtp_host
+      SMTP_PORT_FILE: /run/secrets/smtp_port
+      SMTP_USER_FILE: /run/secrets/smtp_user
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+      MAIL_FROM_FILE: /run/secrets/mail_from
+      FEISHU_WEBHOOK_URL_FILE: /run/secrets/feishu_webhook_url
+      FEISHU_WEBHOOK_SECRET_FILE: /run/secrets/feishu_webhook_secret
+    secrets:
+      - database_url
+      - auth_hmac_key
+      - settings_encryption_key
+      - smtp_host
+      - smtp_port
+      - smtp_user
+      - smtp_password
+      - mail_from
+      - feishu_webhook_url
+      - feishu_webhook_secret
+    volumes:
+      - chonghub-private:/app/var/private
+    networks:
+      internal:
+      edge:
+        aliases: [chonghub-web]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  admin:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      args:
+        SERVICE: admin
+        PORT: 3001
+    environment:
+      NODE_ENV: production
+      APP_ORIGIN: ${APP_ORIGIN:?APP_ORIGIN is required}
+      ADMIN_ORIGIN: ${ADMIN_ORIGIN:?ADMIN_ORIGIN is required}
+      PORT: 3001
+      PRIVATE_STORAGE_DIR: /app/var/private
+      DATABASE_URL_FILE: /run/secrets/database_url
+      AUTH_HMAC_KEY_FILE: /run/secrets/auth_hmac_key
+      SETTINGS_ENCRYPTION_KEY_FILE: /run/secrets/settings_encryption_key
+      MAIL_TRANSPORT: ${MAIL_TRANSPORT:-smtp}
+      SMTP_HOST_FILE: /run/secrets/smtp_host
+      SMTP_PORT_FILE: /run/secrets/smtp_port
+      SMTP_USER_FILE: /run/secrets/smtp_user
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+      MAIL_FROM_FILE: /run/secrets/mail_from
+      FEISHU_WEBHOOK_URL_FILE: /run/secrets/feishu_webhook_url
+      FEISHU_WEBHOOK_SECRET_FILE: /run/secrets/feishu_webhook_secret
+    secrets:
+      - database_url
+      - auth_hmac_key
+      - settings_encryption_key
+      - smtp_host
+      - smtp_port
+      - smtp_user
+      - smtp_password
+      - mail_from
+      - feishu_webhook_url
+      - feishu_webhook_secret
+    volumes:
+      - chonghub-private:/app/var/private
+    networks:
+      internal:
+      edge:
+        aliases: [chonghub-admin]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  migrate:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: builder
+      args:
+        SERVICE: web
+        PORT: 3000
+    command: ["pnpm", "db:migrate"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL_FILE: /run/secrets/database_url
+      AUTH_HMAC_KEY_FILE: /run/secrets/auth_hmac_key
+    entrypoint: ["/usr/local/bin/chonghub-entrypoint"]
+    secrets:
+      - database_url
+      - auth_hmac_key
+    networks:
+      - internal
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  internal:
+  edge:
+    external: true
+    name: second-growth_default
+
+volumes:
+  chonghub-postgres:
+  chonghub-private:
+
+secrets:
+  postgres_password:
+    file: /opt/chonghub/secrets/postgres_password
+  database_url:
+    file: /opt/chonghub/secrets/database_url
+  auth_hmac_key:
+    file: /opt/chonghub/secrets/auth_hmac_key
+  settings_encryption_key:
+    file: /opt/chonghub/secrets/settings_encryption_key
+  smtp_host:
+    file: /opt/chonghub/secrets/smtp_host
+  smtp_port:
+    file: /opt/chonghub/secrets/smtp_port
+  smtp_user:
+    file: /opt/chonghub/secrets/smtp_user
+  smtp_password:
+    file: /opt/chonghub/secrets/smtp_password
+  mail_from:
+    file: /opt/chonghub/secrets/mail_from
+  feishu_webhook_url:
+    file: /opt/chonghub/secrets/feishu_webhook_url
+  feishu_webhook_secret:
+    file: /opt/chonghub/secrets/feishu_webhook_secret

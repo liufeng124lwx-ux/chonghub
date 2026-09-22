@@ -1,0 +1,3 @@
+{"file":".trellis/tasks/09-22-deploy-production/design.md","reason":"Deployment topology, isolation, configuration, release, and rollback design."}
+{"file":"docs/operations/production-handoff.md","reason":"Current ChongHub production prerequisites, migration order, manual fulfillment boundary, and rollback warnings."}
+{"file":"/Users/lwx/Workspace/opc/scsy_fenxiao/docs/deployment/tencent-cloud-production.md","reason":"Reference deployment facts only: host alias, release layout, Compose/Caddy topology, secrets boundary, backup rules, and public health verification."}

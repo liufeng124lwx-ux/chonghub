@@ -4,6 +4,8 @@ COPY . .
 RUN corepack enable && pnpm install --frozen-lockfile
 ARG SERVICE=web
 RUN pnpm --filter @chonghub/${SERVICE} build
+COPY ops/deploy/entrypoint.sh /usr/local/bin/chonghub-entrypoint
+RUN chmod 0555 /usr/local/bin/chonghub-entrypoint
 
 FROM node:24-alpine AS runner
 WORKDIR /app
@@ -17,4 +19,5 @@ COPY --from=builder /app/apps/${SERVICE}/.next-build/standalone ./
 COPY --from=builder /app/apps/${SERVICE}/.next-build/static ./apps/${SERVICE}/.next-build/static
 COPY --from=builder /app/public ./apps/${SERVICE}/public
 EXPOSE ${PORT}
+ENTRYPOINT ["/usr/local/bin/chonghub-entrypoint"]
 CMD ["sh", "-c", "exec node apps/${SERVICE}/server.js"]

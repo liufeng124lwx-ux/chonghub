@@ -1,0 +1,11 @@
+chonghub.com {
+  reverse_proxy chonghub-web:3000
+}
+
+www.chonghub.com {
+  reverse_proxy chonghub-web:3000
+}
+
+admin.chonghub.com {
+  reverse_proxy chonghub-admin:3001
+}
