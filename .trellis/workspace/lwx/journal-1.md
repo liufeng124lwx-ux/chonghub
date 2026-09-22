@@ -68,3 +68,24 @@ Redesigned /admin/products with lifecycle summary, create/publish/archive workfl
 ### Status
 
 [OK] **Completed**
+
+
+## Session 4: 区分会员充值与账号商品
+
+**Date**: 2026-09-22
+**Task**: 区分会员充值与账号商品
+**Branch**: `main`
+
+### Summary
+
+新增 product_type 与平台维度，后台上新表单区分充值/账号和 ChatGPT/Claude/Google；账号商品绕过 ChatGPT 初筛，继续微信人工确认、收款和交付；订单保存类型与平台快照；归档语义和历史订单保留不变。已验证 typecheck、lint、34 tests passed/2 skipped、web/admin build、3000/3001 health checks。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `16cddc2` | (see git log) |
+
+### Status
+
+[OK] **Completed**
