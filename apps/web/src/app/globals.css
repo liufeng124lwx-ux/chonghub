@@ -29,6 +29,10 @@
 .purchase-flow-head { display:flex; justify-content:space-between; gap:20px; align-items:flex-end; margin-bottom:18px; }
 .purchase-flow-head h2 { margin:8px 0; font-size:26px; letter-spacing:-.04em; }
 .purchase-flow-head p { color:var(--muted); font-size:13px; margin:0; max-width:520px; }
+.purchase-session-field { display:grid; gap:7px; }
+.purchase-field-label { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:13px; font-weight:650; }
+.purchase-field-label label { display:block; font-weight:inherit; }
+.purchase-field-label .text-link { flex:none; font-size:12px; white-space:nowrap; }
 .purchase-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
 .purchase-check-card,.purchase-order-card { margin-top:0; }
 .purchase-check-actions { display:flex; align-items:center; gap:12px; }
@@ -60,7 +64,7 @@
 .floating-wechat-contact-copy span { color:var(--muted); font-size:12px; }
 .floating-wechat-contact-copy code { max-width:100%; overflow-wrap:anywhere; color:var(--primary-dark); background:var(--soft); border-radius:4px; padding:2px 5px; font-size:12px; }
 .floating-wechat-contact-copy a { margin-top:3px; color:var(--primary); font-size:11px; font-weight:700; }
-@media(max-width:800px) { .purchase-flow-head,.order-wechat-action { display:block; } .purchase-flow-head .text-link { display:inline-block; margin-top:12px; } .purchase-grid { grid-template-columns:1fr; } .order-wechat-action span { display:block; margin-top:10px; } }
+@media(max-width:800px) { .purchase-flow-head,.order-wechat-action { display:block; } .purchase-grid { grid-template-columns:1fr; } .order-wechat-action span { display:block; margin-top:10px; } }
 @media(max-width:560px) { .floating-wechat-contact { right:max(12px,env(safe-area-inset-right)); bottom:max(12px,env(safe-area-inset-bottom)); } }
 
 body {

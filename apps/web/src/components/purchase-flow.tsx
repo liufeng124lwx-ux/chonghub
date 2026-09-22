@@ -78,10 +78,13 @@ export default function PurchaseFlow({ product }: { product: ProductView }) {
 
   return <section className="purchase-flow" id="purchase">
     {busy && <div className="wechat-modal-backdrop"><div className="wechat-modal" role="status" aria-live="polite"><span className="order-spinner" aria-hidden="true" /><h2>正在生成订单</h2><p>正在保存套餐和检测结果，请稍候…</p></div></div>}
-    <div className="purchase-flow-head"><div><span className="eyebrow">购买前检测</span><h2>先检测账号，再直接购买</h2><p>检测只在你的浏览器内进行，不上传或保存授权内容。检测通过后填写邮箱即可生成订单。</p></div><a className="text-link" href="https://chatgpt.com/api/auth/session" target="_blank" rel="noreferrer">获取授权内容 ↗</a></div>
+    <div className="purchase-flow-head"><div><span className="eyebrow">购买前检测</span><h2>先检测账号，再直接购买</h2><p>检测只在你的浏览器内进行，不上传或保存授权内容。检测通过后填写邮箱即可生成订单。</p></div></div>
     <div className="purchase-grid">
       <div className="form-card purchase-check-card">
-        <label>粘贴 ChatGPT 授权内容<textarea autoComplete="off" value={session} onChange={(event) => { setSession(event.target.value); setReport(null); setMessage(''); setPurchaseAttempted(false); }} placeholder="先登录 ChatGPT，再打开会话信息页面并全选复制 JSON" /></label>
+        <div className="purchase-session-field">
+          <div className="purchase-field-label"><label htmlFor="chatgpt-session">粘贴 ChatGPT 授权内容</label><a className="text-link" href="https://chatgpt.com/api/auth/session" target="_blank" rel="noreferrer">获取授权内容 ↗</a></div>
+          <textarea id="chatgpt-session" autoComplete="off" value={session} onChange={(event) => { setSession(event.target.value); setReport(null); setMessage(''); setPurchaseAttempted(false); }} placeholder="先登录 ChatGPT，再打开会话信息页面并全选复制 JSON" />
+        </div>
         <div className="purchase-check-actions"><button className="button button-secondary" type="button" disabled={!session.trim() || busy} onClick={detect}>检测账号</button>{report && <span className={`check-badge check-${report.status}`}>{report.status === 'passed' ? '检测通过' : report.status === 'subscribed' ? '订阅中' : '需重新检查'}</span>}</div>
         {!purchaseAttempted && message && <p className="form-message" role={report?.status === 'passed' ? 'status' : 'alert'}>{message}</p>}
         {report?.status === 'passed' && <small>检测仅依据提供的信息，实际充值条件仍需客服人工确认。</small>}
