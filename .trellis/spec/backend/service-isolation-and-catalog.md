@@ -16,7 +16,7 @@ This contract applies to the split web/admin services, administrator sessions, S
 - `availability` is exactly `available | sold_out`; lifecycle `status` remains `draft | published | unlisted`.
 - Admin requests include `productId`, `skuId`, `availability`, `expectedVersion`, and `idempotencyKey`.
 - A public SKU is purchasable only when product and SKU status are `published` and availability is `available`.
-- Admin sessions use `chonghub_admin_session`; public sessions use `chonghub_session`.
+- Admin login accepts a normalized username and password through `POST /api/admin/auth/login`; passwords are stored as scrypt digests in `admin_credentials`. Admin sessions use `chonghub_admin_session`; public sessions use `chonghub_session`.
 - Web runs on 3000 and admin on 3001. Both share PostgreSQL; `healthz` is process health and `readyz` checks PostgreSQL.
 
 ## 4. Validation & Error Matrix
@@ -28,6 +28,7 @@ This contract applies to the split web/admin services, administrator sessions, S
 | Stale version | `CONFLICT` |
 | Repeated `(skuId, idempotencyKey)` | idempotent replay, no second version increment |
 | Sold-out or unpublished SKU at order commit | `SKU_UNAVAILABLE`, no order inserted |
+| Unknown or invalid admin credentials | `INVALID_CREDENTIALS`, no session issued |
 
 ## 5. Good/Base/Bad Cases
 
@@ -57,4 +58,3 @@ SELECT id, availability FROM skus
 WHERE id = $1 AND product_id = $2
 FOR UPDATE;
 ```
-
