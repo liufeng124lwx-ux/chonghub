@@ -1,7 +1,7 @@
 FROM node:24-alpine AS builder
 WORKDIR /app
 COPY . .
-RUN corepack enable && pnpm install --frozen-lockfile
+RUN corepack enable && corepack prepare pnpm@10.30.3 --activate && pnpm install --frozen-lockfile
 ARG SERVICE=web
 RUN pnpm --filter @chonghub/${SERVICE} build
 COPY ops/deploy/entrypoint.sh /usr/local/bin/chonghub-entrypoint
