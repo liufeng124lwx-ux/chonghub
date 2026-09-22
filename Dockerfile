@@ -18,6 +18,7 @@ ENV PORT=${PORT}
 COPY --from=builder /app/apps/${SERVICE}/.next-build/standalone ./
 COPY --from=builder /app/apps/${SERVICE}/.next-build/static ./apps/${SERVICE}/.next-build/static
 COPY --from=builder /app/public ./apps/${SERVICE}/public
+COPY --from=builder /usr/local/bin/chonghub-entrypoint /usr/local/bin/chonghub-entrypoint
 EXPOSE ${PORT}
 ENTRYPOINT ["/usr/local/bin/chonghub-entrypoint"]
 CMD ["sh", "-c", "exec node apps/${SERVICE}/server.js"]
