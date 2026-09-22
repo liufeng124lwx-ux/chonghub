@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 5
+- **Total Sessions**: 6
 - **Last Active**: 2026-09-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~112 | Active |
+| `journal-1.md` | ~133 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 6 | 2026-09-22 | Deploy ChongHub storefront release | `b650e68` | `main` |
 | 5 | 2026-09-22 | Refresh ChongHub storefront hierarchy | `6c68b71` | `main` |
 | 4 | 2026-09-22 | 区分会员充值与账号商品 | `16cddc2` | `main` |
 | 3 | 2026-09-22 | Improve admin product operations | `7d99920` | `main` |

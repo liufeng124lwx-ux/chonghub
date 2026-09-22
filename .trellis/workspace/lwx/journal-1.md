@@ -110,3 +110,24 @@ Refreshed the public homepage, catalog/pricing view, and product detail hierarch
 ### Status
 
 [OK] **Completed**
+
+
+## Session 6: Deploy ChongHub storefront release
+
+**Date**: 2026-09-22
+**Task**: Deploy ChongHub storefront release
+**Branch**: `main`
+
+### Summary
+
+Pushed cc601cb storefront release, built amd64 web/admin/migrate images on Tencent production, verified backup and migration, activated isolated ChongHub services, and passed container/public health and asset checks. Recorded deployment evidence and retained rollback backup.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b650e68` | (see git log) |
+
+### Status
+
+[OK] **Completed**
