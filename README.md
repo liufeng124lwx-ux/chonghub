@@ -18,7 +18,7 @@ ChongHub is a database-backed manual fulfillment storefront for digital services
 - `/requests/new`：游客或已登录用户提交需求。访客会获得 24 小时 HttpOnly 查单授权。
 - `/requests/:number/screening`：在浏览器内完成 ChatGPT 会话状态初筛，原始 JSON 不会发往 API。
 - `/guest/orders`、`/me`、`/orders/:number`、`/orders/:number/after-sales`：游客查单、邮箱登录后的个人中心、订单进度和售后申请/附件。
-- `/admin`：单管理员工作台；用 `pnpm exec tsx scripts/bootstrap-admin.ts admin@example.com` 初始化管理员身份。商品价格、营业规则、客服入口和退款登记均在后台处理，历史订单保留快照。
+- `/admin`：单管理员工作台；用 `ADMIN_USERNAME=ops ADMIN_PASSWORD='<至少 12 位>' ADMIN_EMAIL=ops@example.com pnpm exec tsx scripts/bootstrap-admin.ts` 初始化用户名/密码。后台使用独立管理员会话，商品价格、营业规则、客服入口和退款登记均在后台处理，历史订单保留快照。
 
 首版没有在线支付或上游自动充值接口。通过初筛后，用户扫码添加微信「流风」确认报价、收款和人工交付。
 

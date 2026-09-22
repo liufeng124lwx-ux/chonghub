@@ -2,9 +2,8 @@
 import { jsonData } from '@chonghub/core/server/http';
 import { routeSafely } from '@chonghub/core/server/router';
 import { AppError } from '@chonghub/core/server/errors';
-import { readAdminActor, createAdminSession, adminSessionCookie, revokeAdminSession, clearAdminSessionCookie } from '@chonghub/core/modules/auth/admin-session';
-import { sendOtp, verifyLogin } from '@chonghub/core/modules/auth/otp';
-import { normalizeEmail } from '@chonghub/core/modules/auth/contracts';
+import { readAdminActor, adminSessionCookie, revokeAdminSession, clearAdminSessionCookie } from '@chonghub/core/modules/auth/admin-session';
+import { authenticateAdmin } from '@chonghub/core/modules/auth/admin-credentials';
 import { query } from '@chonghub/core/server/db';
 import { executeAdminCommand, parseAdminCommand } from '@chonghub/core/modules/orders/commands';
 import { updatePublicSettings } from '@chonghub/core/modules/settings/service';
@@ -23,9 +22,15 @@ function text(value: unknown, name: string): string { if (typeof value !== 'stri
 async function handler(request: Request, { params }: Ctx) {
   const path = `/${((await params).path ?? []).join('/')}`;
   const origin = request.headers.get('origin');
-  if (request.method !== 'GET' && (!origin || origin !== (process.env.APP_ORIGIN || new URL(request.url).origin))) throw new AppError('CSRF_REJECTED', '请求来源不受信任。', 403);
-  if (request.method === 'POST' && path === '/auth/otp') { const data = await body(request); await sendOtp(normalizeEmail(text(data.email, '邮箱')), 'login', undefined, request.headers.get('x-forwarded-for') ?? 'unknown'); return jsonData({ accepted: true }); }
-  if (request.method === 'POST' && path === '/auth/verify') { const data = await body(request); const result = await verifyLogin(normalizeEmail(text(data.email, '邮箱')), text(data.code, '验证码')); const admin = await createAdminSession(result.userId); const response = jsonData({ userId: result.userId }); response.headers.append('Set-Cookie', adminSessionCookie(admin.token, admin.expiresAt)); return response; }
+  if (request.method !== 'GET' && (!origin || origin !== (process.env.ADMIN_ORIGIN || new URL(request.url).origin))) throw new AppError('CSRF_REJECTED', '请求来源不受信任。', 403);
+  if (request.method === 'POST' && path === '/auth/login') {
+    const data = await body(request);
+    const result = await authenticateAdmin(data.username, data.password);
+    const response = jsonData({ userId: result.userId });
+    response.headers.append('Set-Cookie', adminSessionCookie(result.sessionToken, new Date(result.expiresAt)));
+    return response;
+  }
+  if (path === '/auth/otp' || path === '/auth/verify') throw new AppError('NOT_FOUND', '接口不存在。', 404);
   if (request.method === 'POST' && path === '/auth/logout') { await revokeAdminSession(request); const response = jsonData({ loggedOut: true }); response.headers.append('Set-Cookie', clearAdminSessionCookie()); return response; }
   const actor = await readAdminActor(request);
   if (!actor) throw new AppError('FORBIDDEN', '无权访问后台。', 403);
