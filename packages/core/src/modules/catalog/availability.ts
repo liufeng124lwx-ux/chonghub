@@ -4,7 +4,7 @@ import { AppError } from '@chonghub/core/server/errors';
 import type { SkuAvailability } from './contracts';
 
 export async function setSkuAvailability(productId: string, skuId: string, availability: SkuAvailability, actor: { kind: 'admin'; userId: string }, key: string, expectedVersion: number): Promise<void> {
-  if (!productId || !skuId || (availability !== 'available' && availability !== 'sold_out') || !key || !Number.isInteger(expectedVersion) || expectedVersion < 0) throw new AppError('INVALID_REQUEST', '售卖状态参数无效。');
+  if (!productId || !skuId || (availability !== 'available' && availability !== 'sold_out') || !key || key.length < 16 || key.length > 200 || !Number.isInteger(expectedVersion) || expectedVersion < 0) throw new AppError('INVALID_REQUEST', '售卖状态参数无效。');
   await withTransaction(async (client) => {
     const row = await client.query<{ version: number }>('SELECT version FROM skus WHERE id=$1 AND product_id=$2 FOR UPDATE', [skuId, productId]);
     if (!row.rows[0]) throw new AppError('NOT_FOUND', '规格不存在。', 404);

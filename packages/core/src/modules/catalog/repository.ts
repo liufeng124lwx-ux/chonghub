@@ -19,6 +19,13 @@ type ProductRow = {
   availability: SkuAvailability;
 };
 
+export type AdminProductView = ProductView & {
+  status: 'draft' | 'published' | 'unlisted';
+  createdAt: string;
+  updatedAt: string;
+  skus: Array<ProductView['skus'][number] & { status: 'draft' | 'published' | 'unlisted' }>;
+};
+
 const select = `
   SELECT p.id, p.slug, p.name, p.description, p.eligibility_text,
          p.screening_method, p.delivery_method,
@@ -67,4 +74,59 @@ export async function findPublishedProducts(): Promise<ProductView[]> {
 export async function findPublishedProduct(slug: string): Promise<ProductView | null> {
   const { rows } = await query<ProductRow>(`${select} AND p.slug = $1 ORDER BY s.sort_order, s.price_cents`, [slug]);
   return groupProducts(rows)[0] ?? null;
+}
+
+type AdminProductRow = ProductRow & {
+  product_status: AdminProductView['status'];
+  sku_status: AdminProductView['status'];
+  created_at: Date;
+  updated_at: Date;
+};
+
+export async function findAdminProducts(): Promise<AdminProductView[]> {
+  const { rows } = await query<AdminProductRow>(`
+    SELECT p.id, p.slug, p.name, p.description, p.eligibility_text,
+           p.screening_method, p.delivery_method, p.status AS product_status,
+           p.created_at, p.updated_at,
+           s.id AS sku_id, s.slug AS sku_slug, s.name AS sku_name,
+           s.cycle_text, s.price_cents, s.warranty_text, s.status AS sku_status,
+           s.availability, s.version
+    FROM products p
+    LEFT JOIN skus s ON s.product_id = p.id
+    ORDER BY CASE p.status WHEN 'published' THEN 0 WHEN 'draft' THEN 1 ELSE 2 END,
+             p.sort_order, p.updated_at DESC, p.name, s.sort_order, s.price_cents
+  `);
+  const products = new Map<string, AdminProductView>();
+  for (const row of rows) {
+    const existing = products.get(row.id) ?? {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      description: row.description,
+      eligibilityText: row.eligibility_text,
+      screening: row.screening_method,
+      deliveryMethod: row.delivery_method,
+      status: row.product_status,
+      createdAt: new Date(row.created_at).toISOString(),
+      updatedAt: new Date(row.updated_at).toISOString(),
+      skus: [],
+    };
+    if (row.sku_id) {
+      existing.skus.push({
+        id: row.sku_id,
+        slug: row.sku_slug,
+        name: row.sku_name,
+        cycleText: row.cycle_text,
+        priceCents: row.price_cents,
+        version: row.version,
+        eligibilityText: row.eligibility_text,
+        warrantyText: row.warranty_text,
+        availability: row.availability,
+        isPurchasable: isSkuPurchasable(row.product_status, row.sku_status, row.availability),
+        status: row.sku_status,
+      });
+    }
+    products.set(row.id, existing);
+  }
+  return [...products.values()];
 }

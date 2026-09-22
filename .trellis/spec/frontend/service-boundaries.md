@@ -48,3 +48,9 @@ This contract applies to pages, components, middleware, and API routes in `apps/
 ```tsx
 <button disabled={!selectedSku?.isPurchasable} onClick={buy}>立即购买</button>
 ```
+
+## 8. Admin Product Workflow
+
+- The admin page must list all lifecycle states through an admin DTO. It must provide a create form, explicit publish action, and archive action with copy explaining that historical orders remain intact.
+- Product status (`draft`, `published`, `unlisted`) and SKU availability (`available`, `sold_out`) are separate controls. A sold-out SKU remains visible but cannot be selected for a new public order.
+- The admin editor sends a fresh idempotency key for create, publish, archive, SKU lifecycle, and availability writes. A conflict preserves the editor and asks the operator to refresh.

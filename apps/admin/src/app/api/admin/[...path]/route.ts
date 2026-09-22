@@ -7,7 +7,7 @@ import { authenticateAdmin } from '@chonghub/core/modules/auth/admin-credentials
 import { query } from '@chonghub/core/server/db';
 import { executeAdminCommand, parseAdminCommand } from '@chonghub/core/modules/orders/commands';
 import { updatePublicSettings } from '@chonghub/core/modules/settings/service';
-import { updateCatalogEntry, publishProduct } from '@chonghub/core/modules/catalog/admin';
+import { createCatalogProduct, setProductStatus, setSkuStatus, updateCatalogEntry } from '@chonghub/core/modules/catalog/admin';
 import { setSkuAvailability } from '@chonghub/core/modules/catalog/availability';
 import { getNotificationSummary, retryNotification } from '@chonghub/core/modules/notifications/admin';
 import { recordRefund } from '@chonghub/core/modules/after-sales/service';
@@ -34,6 +34,11 @@ async function handler(request: Request, { params }: Ctx) {
   if (request.method === 'POST' && path === '/auth/logout') { await revokeAdminSession(request); const response = jsonData({ loggedOut: true }); response.headers.append('Set-Cookie', clearAdminSessionCookie()); return response; }
   const actor = await readAdminActor(request);
   if (!actor) throw new AppError('FORBIDDEN', '无权访问后台。', 403);
+  if (request.method === 'POST' && path === '/products') {
+    const data = await body(request);
+    const result = await createCatalogProduct(data as Parameters<typeof createCatalogProduct>[0], actor, text(data.idempotencyKey, '操作标识'));
+    return jsonData(result, { status: 201 });
+  }
   const command = path.match(/^\/orders\/([^/]+)\/commands$/);
   if (request.method === 'POST' && command) { const data = await body(request); return jsonData(await executeAdminCommand(command[1], actor, parseAdminCommand(data.command), text(data.idempotencyKey, '操作标识'), Number(data.expectedVersion))); }
   if (request.method === 'GET' && path === '/dashboard') {
@@ -56,9 +61,10 @@ async function handler(request: Request, { params }: Ctx) {
     return jsonData(orders.rows.map((row) => ({ number: row.number, email: row.contact_email, deliveryStatus: row.delivery_status, paymentStatus: row.payment_status, screeningStatus: row.screening_status, quotedPriceCents: row.quoted_price_cents, dueAt: row.due_at ? new Date(row.due_at).toISOString() : null, createdAt: new Date(row.created_at).toISOString() })));
   }
   if (request.method === 'PATCH' && path === '/settings') { const data = await body(request); await updatePublicSettings(data as any); return jsonData({ updated: true }); }
-  const product = path.match(/^\/products\/([^/]+)$/); if (request.method === 'PATCH' && product) { const data = await body(request); await updateCatalogEntry(product[1], data as any); return jsonData({ updated: true }); }
-  const publish = path.match(/^\/products\/([^/]+)\/publish$/); if (request.method === 'POST' && publish) { await publishProduct(publish[1]); return jsonData({ published: true }); }
+  const product = path.match(/^\/products\/([^/]+)$/); if (request.method === 'PATCH' && product) { const data = await body(request); await updateCatalogEntry(product[1], data as any, actor, text(data.idempotencyKey, '操作标识')); return jsonData({ updated: true }); }
+  const lifecycle = path.match(/^\/products\/([^/]+)\/(publish|archive)$/); if (request.method === 'POST' && lifecycle) { await setProductStatus(lifecycle[1], lifecycle[2] === 'publish' ? 'published' : 'unlisted', actor, text((await body(request)).idempotencyKey, '操作标识')); return jsonData({ status: lifecycle[2] === 'publish' ? 'published' : 'unlisted' }); }
   const availability = path.match(/^\/products\/([^/]+)\/skus\/([^/]+)\/availability$/); if (request.method === 'PATCH' && availability) { const data = await body(request); await setSkuAvailability(availability[1], availability[2], data.availability as 'available' | 'sold_out', actor, text(data.idempotencyKey, '操作标识'), Number(data.expectedVersion)); return jsonData({ updated: true }); }
+  const skuStatus = path.match(/^\/products\/([^/]+)\/skus\/([^/]+)\/status$/); if (request.method === 'PATCH' && skuStatus) { const data = await body(request); await setSkuStatus(skuStatus[1], skuStatus[2], data.status as 'draft' | 'published' | 'unlisted', actor, text(data.idempotencyKey, '操作标识')); return jsonData({ updated: true }); }
   const refund = path.match(/^\/after-sales\/([^/]+)\/refunds$/); if (request.method === 'POST' && refund) { const data = await body(request); await recordRefund(refund[1], actor, data as any, text(data.idempotencyKey, '操作标识'), Number(data.version)); return jsonData({ recorded: true }); }
   throw new AppError('NOT_FOUND', '接口不存在。', 404);
 }

@@ -58,3 +58,49 @@ SELECT id, availability FROM skus
 WHERE id = $1 AND product_id = $2
 FOR UPDATE;
 ```
+
+## 8. Admin Catalog Lifecycle
+
+### Signatures
+
+- `POST /api/admin/products` creates one product and its first SKU. It accepts unique lower-case slugs, descriptive text, integer `priceCents`, optional `status` (`draft` by default), and an idempotency key.
+- `POST /api/admin/products/:productId/publish` publishes a product only when it has a published SKU.
+- `POST /api/admin/products/:productId/archive` changes the product to `unlisted` and records an audit event.
+- `PATCH /api/admin/products/:productId/skus/:skuId/status` changes SKU lifecycle independently from `availability`.
+- `012_catalog_commands.sql` stores create, publish, archive, and SKU lifecycle command keys for replay protection.
+
+### Contracts
+
+- The admin catalog DTO includes draft, published, and archived products. Public catalog queries remain filtered to published products and SKUs.
+- “Delete” is an archive operation. Product and SKU rows are retained so historical order snapshots and restoration remain safe.
+- Publishing and archive actions require the dedicated admin session, a fresh idempotency key, a transaction, and an audit event.
+
+### Validation & Error Matrix
+
+| Condition | Result |
+|---|---|
+| Duplicate product or SKU slug | `CONFLICT`, no product inserted |
+| Publish without a published SKU | `INVALID_REQUEST`, product remains unchanged |
+| Archive product | `unlisted`, no physical delete, audit event recorded |
+| Replayed catalog command | original result/no second state transition |
+
+### Good / Base / Bad Cases
+
+- Good: create a draft, review it, publish its SKU, then publish the product.
+- Base: mark one SKU sold out while keeping the product and other SKUs visible.
+- Bad: use `listPublishedProducts()` for the admin page or run SQL `DELETE` against a product with historical orders.
+
+### Tests Required
+
+- Integration: create idempotency replay, slug conflicts, publish precondition, archive visibility, and SKU status/availability independence.
+- UI: draft/published/archived summary counts, price save, sold-out toggle, publish, and archive copy.
+
+### Wrong vs Correct
+
+```sql
+-- Wrong
+DELETE FROM products WHERE id = $1;
+
+-- Correct
+UPDATE products SET status = 'unlisted', updated_at = now() WHERE id = $1;
+```
