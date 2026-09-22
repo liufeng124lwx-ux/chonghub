@@ -47,6 +47,21 @@ raw ChatGPT session snapshot in browser memory only and send only the constraine
 | Recharge | Show the ChatGPT session screening controls only when `screening === 'gpt_session'`; keep the constrained screening report flow. |
 | Account | Show platform/type labels, skip session screening, and state that the request is manually confirmed and fulfilled through WeChat. |
 
+## Public Catalog Policy Values
+
+Public product cards and catalog copy must receive mutable service-policy values from
+`getPublicSettings()` rather than embedding operational numbers in a shared component.
+For example, pass `settings.policy.deliveryMinutes` into `ProductCard` and format it at
+render time. This keeps homepage and catalog delivery claims aligned with the admin
+settings used by the guide and fulfillment messaging.
+
+```tsx
+<ProductCard product={product} deliveryMinutes={settings.policy.deliveryMinutes} />
+```
+
+Do not add a literal such as `2 小时内交付` to a public card when the value is already
+configurable in settings.
+
 The admin create form must use labelled, keyboard-accessible selects for product type and platform. Account copy must not imply online payment, automatic delivery, or credential storage is available.
 
 ---

@@ -5,7 +5,7 @@ function money(cents: number) {
   return `¥${(cents / 100).toLocaleString('zh-CN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 }
 
-export function ProductCard({ product }: { product: ProductView }) {
+export function ProductCard({ product, deliveryMinutes }: { product: ProductView; deliveryMinutes: number }) {
   const lowest = Math.min(...product.skus.map((sku) => sku.priceCents));
   const soldOut = product.skus.every((sku) => !sku.isPurchasable);
   const featured = product.slug.includes('pro-5x');
@@ -19,10 +19,11 @@ export function ProductCard({ product }: { product: ProductView }) {
       </div>
       <h3>{product.name}</h3>
       <p>{product.description}</p>
+      <p className="product-eligibility"><strong>适用范围：</strong>{product.eligibilityText}</p>
       <ul className="product-features" aria-label="服务包含内容">
         <li>{product.screening === 'gpt_session' ? '浏览器内完成账号状态初筛' : '客服人工确认商品规格'}</li>
         <li>客服人工确认条件与最终报价</li>
-        <li>确认收款后，营业时间内 2 小时内交付</li>
+        <li>确认收款后，营业时间内 {Math.round(deliveryMinutes / 60)} 小时内交付</li>
       </ul>
       <div className="product-price"><span>起</span>{money(lowest)}<small> / {product.productType === 'account' ? '件' : '月卡'}</small></div>
       <div className="product-meta"><span>{product.screening === 'gpt_session' ? '账号状态初筛' : '人工确认规格'}</span><span>人工确认交付</span>{soldOut && <span>暂时售罄</span>}</div>

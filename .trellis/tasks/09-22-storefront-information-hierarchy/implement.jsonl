@@ -1,0 +1,6 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Frontend component conventions for public page edits"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Purchase-flow and public web validation contracts"}
+{"file": ".trellis/spec/frontend/service-boundaries.md", "reason": "Web route ownership and product presentation constraints"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Search existing components and avoid duplicated UI logic"}
+{"file": ".trellis/tasks/09-22-storefront-information-hierarchy/research/refero.md", "reason": "Approved Refero synthesis and reference lock"}

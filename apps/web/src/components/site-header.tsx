@@ -15,31 +15,23 @@ const navItems: NavItem[] = [
   {
     href: '/products',
     label: '商品',
-    mobileLabel: '商品中心',
+    mobileLabel: '商品',
     className: 'nav-mobile-visible',
     isActive: (pathname) => pathname === '/products' || pathname.startsWith('/products/'),
   },
   {
-    href: '/orders',
-    label: '订单',
-    mobileLabel: '订单中心',
-    className: 'nav-mobile-visible',
-    isActive: (pathname) => pathname === '/orders' || pathname.startsWith('/orders/') || pathname === '/guest/orders' || pathname.startsWith('/guest/orders/'),
-  },
-  {
-    href: '/screening',
-    label: '账号检测',
-    isActive: (pathname) => pathname === '/screening' || pathname.endsWith('/screening'),
-  },
-  {
     href: '/guide',
     label: '购买说明',
+    mobileLabel: '购买说明',
+    className: 'nav-mobile-visible',
     isActive: (pathname) => pathname === '/guide' || pathname.startsWith('/guide/'),
   },
   {
-    href: '/privacy',
-    label: '隐私说明',
-    isActive: (pathname) => pathname === '/privacy' || pathname.startsWith('/privacy/'),
+    href: '/orders',
+    label: '订单查询',
+    mobileLabel: '订单查询',
+    className: 'nav-mobile-visible',
+    isActive: (pathname) => pathname === '/orders' || pathname.startsWith('/orders/') || pathname === '/guest/orders' || pathname.startsWith('/guest/orders/'),
   },
   {
     href: '/me',
@@ -47,10 +39,11 @@ const navItems: NavItem[] = [
     isActive: (pathname) => pathname === '/me' || pathname.startsWith('/me/'),
   },
   {
-    href: '/requests/new',
-    label: '提交需求',
-    isActive: (pathname) => pathname === '/requests/new' || pathname.startsWith('/requests/new/'),
+    href: '/screening',
+    label: '先检测账号',
+    mobileLabel: '先检测账号',
     className: 'nav-action',
+    isActive: (pathname) => pathname === '/screening' || pathname.endsWith('/screening'),
   },
 ];
 
