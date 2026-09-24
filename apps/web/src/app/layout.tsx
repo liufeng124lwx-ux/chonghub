@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { SiteHeader } from '@/components/site-header';
 import { JsonLd, organizationJsonLd } from '@/components/json-ld';
-import { siteLogoUrl, siteMetadata, siteName, siteOgImageUrl, siteUrl } from '@/lib/site-config';
+import { googleSiteVerification, siteLogoUrl, siteMetadata, siteName, siteOgImageUrl, siteUrl } from '@/lib/site-config';
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
@@ -25,6 +25,7 @@ export const metadata: Metadata = {
     description: siteMetadata.description,
     images: [siteOgImageUrl],
   },
+  verification: { google: googleSiteVerification },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

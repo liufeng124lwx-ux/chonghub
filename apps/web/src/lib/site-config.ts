@@ -26,6 +26,7 @@ function resolveSiteUrl(): URL {
 
 export const siteUrl = resolveSiteUrl();
 export const siteName = 'ChongHub';
+export const googleSiteVerification = 'FyJ0S0-fNhrPAwk2ZUg8YlzZDzvjCIQOY5vUw_xEARA';
 export const siteDescription = '为已有 ChatGPT 账号提供人工会员充值服务，先检测账号状态，再由客服确认条件与交付。';
 export const siteLogoPath = '/images/logo.svg';
 export const siteOgImagePath = '/images/og-default.png';
