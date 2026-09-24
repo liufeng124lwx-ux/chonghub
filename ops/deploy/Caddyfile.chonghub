@@ -1,9 +1,13 @@
-chonghub.com {
+http://chonghub.com, http://www.chonghub.com {
+  redir https://chonghub.com{uri} permanent
+}
+
+https://chonghub.com {
   reverse_proxy chonghub-web:3000
 }
 
-www.chonghub.com {
-  reverse_proxy chonghub-web:3000
+https://www.chonghub.com {
+  redir https://chonghub.com{uri} permanent
 }
 
 admin.chonghub.com {

@@ -1,0 +1,5 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend quality gate for SEO changes."}
+{"file": ".trellis/spec/frontend/service-boundaries.md", "reason": "Route ownership and smoke-check requirements."}
+{"file": ".trellis/spec/backend/deployment.md", "reason": "Production deployment and Caddy review requirements."}
+{"file": ".trellis/tasks/09-24-seo-technical-foundation/research/google-seo-guidance.md", "reason": "Primary-source review criteria for crawl and structured-data behavior."}

@@ -14,6 +14,59 @@
 .products-index-page{padding:80px 0 105px}.products-index-page h1{font-size:48px;line-height:1.2;letter-spacing:-.055em;margin:10px 0}.products-index-footer{display:flex;justify-content:center;gap:10px;margin-top:28px;color:var(--muted);font-size:13px}.page-section{padding:80px 0 105px}.product-grid-page{margin-top:35px}.page-actions,.entry-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:28px}.entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:38px}.entry-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:0 8px 24px rgba(32,62,68,.04)}.entry-card h2{font-size:22px;letter-spacing:-.035em;margin:9px 0}.entry-card p{color:var(--muted);font-size:14px;min-height:48px}.screening-intro-card{margin-top:38px;max-width:680px}.sku-row{transition:border-color .2s,transform .2s}.sku-row:hover{border-color:#a9c8c4;transform:translateY(-1px)}
 @media(max-width:800px){.main-nav a.nav-mobile-visible{display:inline-flex}.main-nav{max-width:64vw;overflow-x:auto;gap:9px;white-space:nowrap}.main-nav a{font-size:11px}.main-nav .nav-action{flex:none}.entry-grid{grid-template-columns:1fr}.products-index-page,.page-section{padding-block:55px 75px}.products-index-page h1{font-size:37px}}
 
+/* Reviewed, server-rendered SEO article cluster. */
+.article-index-page,.article-detail-page { padding: 72px 0 105px; }
+.article-index-page > .page-lede { max-width: 650px; margin-bottom: 38px; }
+.article-index-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.article-index-card { display:flex; flex-direction:column; min-height:230px; padding:25px; border:1px solid var(--line); border-radius:var(--radius); background:rgba(255,255,255,.86); box-shadow:0 8px 24px rgba(32,62,68,.04); }
+.article-intent { color:var(--primary); font-size:11px; font-weight:750; letter-spacing:.03em; }
+.article-index-card h2 { margin:10px 0 10px; font-size:22px; line-height:1.35; letter-spacing:-.035em; }
+.article-index-card h2 a:hover { color:var(--primary); }
+.article-index-card p { color:var(--muted); font-size:14px; line-height:1.75; }
+.article-index-meta { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:auto; padding-top:20px; color:var(--muted); font-size:11px; }
+.article-index-cta { display:flex; justify-content:center; gap:12px; margin-top:32px; color:var(--muted); font-size:13px; }
+.article-detail-page { width:min(830px,calc(100% - 48px)); }
+.article-detail-header { padding:55px 0 38px; }
+.article-detail-header h1 { max-width:760px; margin:11px 0 16px; font-size:48px; line-height:1.2; letter-spacing:-.055em; }
+.article-meta { display:flex; flex-wrap:wrap; gap:12px 20px; margin-top:22px; color:var(--muted); font-size:12px; }
+.article-prose { border-top:1px solid var(--line); padding-top:38px; }
+.article-prose h2 { margin:42px 0 12px; font-size:24px; line-height:1.35; letter-spacing:-.035em; }
+.article-prose h3 { margin:29px 0 9px; font-size:18px; }
+.article-prose p,.article-prose li { color:#52666b; font-size:15px; line-height:1.9; }
+.article-prose p { margin:0 0 17px; }
+.article-prose ul { margin:0 0 20px; padding-left:22px; }
+.article-prose li { margin:5px 0; }
+.article-prose a,.article-related a { color:var(--primary); font-weight:650; text-decoration:underline; text-decoration-color:rgba(8,127,117,.3); text-underline-offset:3px; }
+.article-prose code { padding:2px 5px; border-radius:4px; background:var(--soft); color:var(--primary-dark); font-size:.9em; }
+.article-related { display:flex; justify-content:space-between; align-items:center; gap:25px; margin-top:55px; padding:25px; border-radius:var(--radius); background:var(--soft); }
+.article-related h2 { margin:8px 0; font-size:21px; letter-spacing:-.035em; }
+.article-related p { margin:0; color:#47746e; font-size:13px; }
+.article-related-links { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:12px 16px; min-width:220px; }
+.article-related-links .button { color:#fff; text-decoration:none; }
+.article-back-link { margin-top:28px; font-size:13px; }
+.article-preview-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.article-preview-card { display:grid; gap:7px; padding:20px; border:1px solid var(--line); border-radius:var(--radius); background:rgba(255,255,255,.76); }
+.article-preview-card:hover { border-color:rgba(8,127,117,.42); transform:translateY(-2px); }
+.article-preview-card strong { font-size:15px; }
+.article-preview-card span { color:var(--muted); font-size:12px; }
+.catalog-article-links { display:flex; flex-wrap:wrap; align-items:center; gap:11px 17px; margin-top:22px; padding:16px 20px; border:1px solid var(--line); border-radius:var(--radius); background:rgba(255,255,255,.55); color:var(--muted); font-size:12px; }
+.catalog-article-links .text-link { font-size:12px; }
+.guide-article-links { margin:37px 0 12px; padding:22px 24px; border:1px solid var(--line); border-radius:var(--radius); background:rgba(255,255,255,.58); }
+.guide-article-links h2 { margin:7px 0 16px; font-size:21px; }
+.guide-article-link-grid { display:flex; flex-wrap:wrap; gap:10px 18px; }
+.guide-article-link-grid a,.detail-article-links a { color:var(--primary); font-size:13px; font-weight:650; }
+.detail-article-links { display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; margin-top:33px; padding-top:22px; border-top:1px solid var(--line); }
+@media(max-width:800px) {
+  .article-index-page,.article-detail-page { padding-block:55px 75px; }
+  .article-index-grid { grid-template-columns:1fr; }
+  .article-index-cta { display:block; text-align:center; line-height:2; }
+  .article-detail-header h1 { font-size:37px; }
+  .article-preview-grid { grid-template-columns:1fr; }
+  .catalog-article-links { display:grid; gap:10px; }
+  .article-related { display:block; }
+  .article-related-links { justify-content:flex-start; margin-top:20px; min-width:0; }
+}
+
 /* Visual refresh: floating glass navigation and clearer plan cards. */
 :root {
   --canvas: #f4f8f7;

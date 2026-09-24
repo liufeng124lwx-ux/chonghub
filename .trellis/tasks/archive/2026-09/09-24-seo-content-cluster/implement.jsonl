@@ -1,0 +1,5 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend conventions and quality gate for article routes."}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Component composition and server/client boundary guidance."}
+{"file": ".trellis/spec/frontend/type-safety.md", "reason": "Typed content metadata and route data requirements."}
+{"file": ".trellis/tasks/09-24-seo-content-cluster/research/content-guidance.md", "reason": "Official people-first content, spam, and Next.js MDX guidance."}

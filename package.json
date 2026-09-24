@@ -16,6 +16,7 @@
     "dev:admin:check": "tsx scripts/dev-admin.ts check",
     "health:web": "tsx scripts/healthcheck-service.ts web",
     "health:admin": "tsx scripts/healthcheck-service.ts admin",
+    "seo:check": "tsx scripts/seo-check.ts",
     "build": "pnpm build:web",
     "build:web": "pnpm --filter @chonghub/web build",
     "build:admin": "pnpm --filter @chonghub/admin build",

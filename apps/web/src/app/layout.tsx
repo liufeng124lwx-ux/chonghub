@@ -1,10 +1,30 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { SiteHeader } from '@/components/site-header';
+import { JsonLd, organizationJsonLd } from '@/components/json-ld';
+import { siteLogoUrl, siteMetadata, siteName, siteOgImageUrl, siteUrl } from '@/lib/site-config';
 
 export const metadata: Metadata = {
-  title: { default: 'ChongHub · 专业会员充值服务', template: '%s · ChongHub' },
-  description: '为已有 ChatGPT 账号提供人工会员充值服务。',
+  metadataBase: siteUrl,
+  title: { default: siteMetadata.title, template: '%s | ChongHub' },
+  description: siteMetadata.description,
+  keywords: siteMetadata.keywords,
+  applicationName: siteName,
+  openGraph: {
+    type: 'website',
+    locale: 'zh_CN',
+    siteName,
+    title: siteMetadata.title,
+    description: siteMetadata.description,
+    url: siteUrl.toString(),
+    images: [{ url: siteOgImageUrl, width: 1200, height: 630, alt: 'ChongHub ChatGPT 会员充值服务' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteMetadata.title,
+    description: siteMetadata.description,
+    images: [siteOgImageUrl],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -12,12 +32,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="zh-CN">
       <body>
         <SiteHeader />
+        <JsonLd data={organizationJsonLd({ name: siteName, url: siteUrl.toString(), logo: siteLogoUrl })} />
         {children}
         <footer className="site-footer">
           <div className="container footer-inner">
             <div><strong>ChongHub</strong><p>专注数字服务的人工履约体验</p></div>
             <div className="footer-links"><a href="/guide">购买说明</a><a href="/privacy">隐私说明</a><a href="/terms">服务条款</a></div>
-            <small>© {new Date().getFullYear()} ChongHub. 服务条款处于草案阶段。</small>
+            <small>© {new Date().getFullYear()} ChongHub. 当前服务规则以购买说明、商品详情与订单确认内容为准。</small>
           </div>
         </footer>
       </body>
