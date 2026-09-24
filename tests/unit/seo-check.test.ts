@@ -22,6 +22,11 @@ describe('SEO edge check helpers', () => {
     expect(inspectHtml(html, 'https://chonghub.com/products').every((check) => check.ok)).toBe(true);
   });
 
+  it('accepts the root canonical URL emitted by Next.js', () => {
+    const html = '<head><link rel="canonical" href="https://chonghub.com"><meta property="og:title" content="Home"><meta property="og:description" content="Description"><script type="application/ld+json">{"@type":"Organization"}</script></head>';
+    expect(inspectHtml(html, 'https://chonghub.com').every((check) => check.ok)).toBe(true);
+  });
+
   it('accepts only permanent redirects to the apex URL', () => {
     const response = new Response(null, { status: 308, headers: { location: 'https://chonghub.com/' } });
     expect(redirectCheck('http://chonghub.com/', response, 'https://chonghub.com/').ok).toBe(true);

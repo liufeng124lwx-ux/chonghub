@@ -177,7 +177,10 @@ export async function checkTarget(options: {
     const page = await fetchText(fetchImpl, asUrl(origin, route), routeIndex === 0 ? SEO_USER_AGENTS.browser : SEO_USER_AGENTS.mobile);
     checks.push(statusCheck(`${route} status`, page.response, 200));
     checks.push({ name: `${route} content type`, ok: header(page.response, 'content-type').includes('text/html'), detail: header(page.response, 'content-type') || '(missing)' });
-    checks.push(...inspectHtml(page.body, `${target}${route === '/' ? '/' : route}`));
+    // Next.js serializes the root canonical URL without a trailing slash even
+    // when the metadata helper receives `/`. Keep the check aligned with the
+    // rendered edge value while preserving the slash on non-root paths.
+    checks.push(...inspectHtml(page.body, `${target}${route === '/' ? '' : route}`));
   }
 
   const googlebotHome = await fetchText(fetchImpl, asUrl(origin, '/'), SEO_USER_AGENTS.googlebot);
