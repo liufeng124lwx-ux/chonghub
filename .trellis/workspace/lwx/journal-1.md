@@ -131,3 +131,24 @@ Pushed cc601cb storefront release, built amd64 web/admin/migrate images on Tence
 ### Status
 
 [OK] **Completed**
+
+
+## Session 7: SEO foundation deployment and GSC submission
+
+**Date**: 2026-09-24
+**Task**: SEO foundation deployment and GSC submission
+**Branch**: `main`
+
+### Summary
+
+Deployed SEO foundation and five content pages to Tencent production; verified robots/sitemap/public metadata/private noindex, completed GSC ownership verification, submitted sitemap, and confirmed Google live URL inspection can index the sitemap. Search Console table remains temporarily at 无法抓取/0 pending processing.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `94e2608` | (see git log) |
+
+### Status
+
+[OK] **Completed**
